@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.me')
 
 @section('content')
 <div class="container">
@@ -13,8 +13,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                        <div class="list-group">
+                            <a href="{{ route('home.contacts') }}" class="list-group-item list-group-item-action">Edit contacts information</a>
+                        </div>
                 </div>
             </div>
         </div>

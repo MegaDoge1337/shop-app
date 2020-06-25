@@ -20,3 +20,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/home/edit/contacts', 'ContactsController@index')->name('home.contacts');
+Route::patch('/home/contacts/{contacts}', 'ContactsController@update')->name('contacts.update');
+
+Route::resource('seller', 'SellerController');
