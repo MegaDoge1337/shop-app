@@ -1,14 +1,9 @@
-@extends('layouts.me')
+@extends('layouts.app')
 
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="row">
-{{--            @isset($products)--}}
-{{--                    <div class="alert alert-danger" role="alert">--}}
-{{--                        You don't have any lots!--}}
-{{--                    </div>--}}
-{{--            @endisset--}}
                 <div class="col-12">
                     <table class="table table-bordered" id="laravel_crud">
                         <thead>
@@ -17,9 +12,7 @@
                             <th>Price</th>
                             <th>Created at</th>
                             <th>Updated at</th>
-                            <td colspan="2">
-                                <center><b>Action</b></center>
-                            </td>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -29,19 +22,9 @@
                                 <td>{{ $product->price }}</td>
                                 <td>{{ date('Y-m-d', strtotime($product->created_at)) }}</td>
                                 <td>{{ date('Y-m-d', strtotime($product->updated_at)) }}</td>
-{{--                                <td>--}}
-{{--                                    <a href="#" class="btn btn-primary">Add to--}}
-{{--                                        cart</a>--}}
-{{--                                </td>--}}
                                 <td>
-                                    <a href="{{ route('seller.edit',$product->id)}}" class="btn btn-primary">Edit</a>
-                                </td>
-                                <td>
-                                    <form action="{{ route('seller.destroy', $product->id)}}" method="post">
-                                        {{ csrf_field() }}
-                                        @method('DELETE')
-                                        <button class="btn btn-danger" type="submit">Delete</button>
-                                    </form>
+                                    <a href="#" class="btn btn-primary">Add to
+                                        cart</a>
                                 </td>
                             </tr>
                         @endforeach

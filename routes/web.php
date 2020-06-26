@@ -25,3 +25,6 @@ Route::get('/home/edit/contacts', 'ContactsController@index')->name('home.contac
 Route::patch('/home/contacts/{contacts}', 'ContactsController@update')->name('contacts.update');
 
 Route::resource('seller', 'SellerController');
+
+Route::get('/shop', 'ShopController@index')->name('shop.index');
+Route::get('/shop/{shop}', 'ShopController@show')->name('shop.show');
