@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Product;
-use App\User;
+use App\Seller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -20,9 +20,18 @@ class SellerController extends Controller
      */
     public function index(Request $request)
     {
-        $data['products'] = Product::orderBy('created_at','desc')->where('seller_id', $request->user()->id)->paginate(10);
+        $seller_info = Seller::where('user_id', $request->user()->id)->first();
 
-        return view('seller.list',$data);
+        if($seller_info)
+        {
+            $seller_id = $seller_info->id;
+
+            $data['products'] = Product::orderBy('created_at','desc')->where('seller_id', $seller_id)->paginate(10);
+
+            return view('seller.list',$data);
+        }
+
+        return \redirect('seller/create');
     }
 
     /**
@@ -43,13 +52,15 @@ class SellerController extends Controller
      */
     public function store(Request $request)
     {
+        Seller::firstOrCreate(['user_id' => $request->user()->id]);
+
         $request->validate([
             'title' => 'required',
             'price' => 'required',
         ]);
 
         $data = [
-            'seller_id' => $request->user()->id,
+            'seller_id' => Seller::where('user_id', $request->user()->id)->first()->id,
             'title' => $request->title,
             'price' => $request->price,
         ];
@@ -81,7 +92,9 @@ class SellerController extends Controller
     {
         $data['product'] = Product::where('id', $id)->first();
 
-        if($data['product']->seller_id != $request->user()->id)
+        $seller_id = Seller::where('user_id', $request->user()->id)->first()->id;
+
+        if($data['product']->seller_id != $seller_id)
         {
             return \redirect('seller');
         }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\Seller;
+use App\User;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -12,11 +14,14 @@ class ShopController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $data['products'] = Product::orderBy('created_at','desc')->paginate(10);
+        $shops = User::join('sellers', 'sellers.user_id', '=', 'users.id')
+            ->get()->all();
 
-        return view('shop.list',$data);
+        $data['shops'] = $shops;
+
+        return view('shop.list', $data);
     }
 
     /**
@@ -25,8 +30,26 @@ class ShopController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        //
+        $user_id = $request->user()->id;
+
+        $seller = Seller::where('user_id', $user_id)->first();
+
+        if($seller == null)
+        {
+            $data['products'] = Product::where('seller_id', $id)->orderBy('created_at','desc')->paginate(10);
+
+            return view('shop.products',$data);
+        }
+
+        if($seller->id != $id)
+        {
+            $data['products'] = Product::where('seller_id', $id)->orderBy('created_at','desc')->paginate(10);
+
+            return view('shop.products',$data);
+        }
+
+        return redirect('seller');
     }
 }

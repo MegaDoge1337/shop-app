@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class BaskerController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,6 +14,16 @@ class BaskerController extends Controller
     public function index()
     {
         //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function make(Request $request)
+    {
+        return dd($request->all());
     }
 
     /**
@@ -28,23 +38,12 @@ class BaskerController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function clear($id)
+    public function destroy($id)
     {
         //
     }

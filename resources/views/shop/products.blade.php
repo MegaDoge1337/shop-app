@@ -1,14 +1,9 @@
-@extends('layouts.me')
+@extends('layouts.app')
 
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="row">
-{{--            @isset($products)--}}
-{{--                    <div class="alert alert-danger" role="alert">--}}
-{{--                        You don't have any lots!--}}
-{{--                    </div>--}}
-{{--            @endisset--}}
                 <div class="col-12">
                     <table class="table table-bordered" id="laravel_crud">
                         <thead>
@@ -17,9 +12,7 @@
                             <th>Price</th>
                             <th>Created at</th>
                             <th>Updated at</th>
-                            <td colspan="2">
-                                <center><b>Action</b></center>
-                            </td>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -30,13 +23,12 @@
                                 <td>{{ date('Y-m-d', strtotime($product->created_at)) }}</td>
                                 <td>{{ date('Y-m-d', strtotime($product->updated_at)) }}</td>
                                 <td>
-                                    <a href="{{ route('seller.edit',$product->id)}}" class="btn btn-primary">Edit</a>
-                                </td>
-                                <td>
-                                    <form action="{{ route('seller.destroy', $product->id)}}" method="post">
-                                        {{ csrf_field() }}
-                                        @method('DELETE')
-                                        <button class="btn btn-danger" type="submit">Delete</button>
+                                    <form action="{{ route('basket.store')}}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="seller_id" value="{{ $product->seller_id }}">
+                                        <button class="btn btn-primary" type="submit">Add to
+                                            cart</button>
                                     </form>
                                 </td>
                             </tr>

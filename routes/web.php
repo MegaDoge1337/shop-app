@@ -28,3 +28,10 @@ Route::resource('seller', 'SellerController');
 
 Route::get('/shop', 'ShopController@index')->name('shop.index');
 Route::get('/shop/{shop}', 'ShopController@show')->name('shop.show');
+
+Route::get('/basket', 'BasketController@index')->name('basket.index');
+Route::get('/basket/{basket}', 'BasketController@show')->name('basket.show');
+Route::post('/basket', 'BasketController@store')->name('basket.store');
+
+Route::post('/order/make', 'OrderController@make')->name('order.make');
+Route::post('/order', 'OrderController@store')->name('order.store');

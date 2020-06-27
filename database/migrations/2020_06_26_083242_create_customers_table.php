@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBasketsTable extends Migration
+class CreateCustomersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateBasketsTable extends Migration
      */
     public function up()
     {
-        Schema::create('baskets', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('seller_id')->index();
-            $table->bigInteger('customer_id')->index();
-            $table->bigInteger('product_id')->index();
+            $table->bigInteger('user_id')->index();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreateBasketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('baskets');
+        Schema::dropIfExists('customers');
     }
 }
