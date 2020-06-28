@@ -21,6 +21,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Basket whereSellerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Basket whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $customer_id
+ * @property int $product_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Basket whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Basket whereProductId($value)
  */
 class Basket extends Model
 {

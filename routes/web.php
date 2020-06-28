@@ -35,3 +35,5 @@ Route::post('/basket', 'BasketController@store')->name('basket.store');
 
 Route::post('/order/make', 'OrderController@make')->name('order.make');
 Route::post('/order', 'OrderController@store')->name('order.store');
+
+Route::get('/customer/orders', 'CustomerController@index')->name('customer.orders');

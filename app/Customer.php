@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereUserId($value)
  * @mixin \Eloquent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Customer whereUpdatedAt($value)
  */
 class Customer extends Model
 {

@@ -17,7 +17,6 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->bigInteger('seller_id')->index();
             $table->bigInteger('customer_id')->index();
-            $table->string('customer_name');
             $table->string('customer_address');
             $table->json('products_id');
             $table->float('amount');

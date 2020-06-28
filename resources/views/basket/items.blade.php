@@ -12,7 +12,6 @@
                             <th>Price</th>
                             <th>Created at</th>
                             <th>Updated at</th>
-                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>

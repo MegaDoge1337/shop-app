@@ -68,6 +68,9 @@
                                 <a class="dropdown-item" href="{{ route('seller.create') }}">
                                     {{ __('Add product') }}
                                 </a>
+                                <a class="dropdown-item" href="{{ route('customer.orders') }}">
+                                    {{ __('Customer: orders') }}
+                                </a>
                                 <a class="dropdown-item" href="{{ route('basket.index') }}">
                                     {{ __('Basket') }}
                                 </a>

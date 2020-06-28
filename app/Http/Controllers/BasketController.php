@@ -108,8 +108,6 @@ class BasketController extends Controller
      */
     public function destroy($id)
     {
-//        Basket::where('id',$id)->delete();
-//
-//        return Redirect::to('seller')->with('success','Product deleted successfully');
+        //
     }
 }
