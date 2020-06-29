@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Redirect;
 
 class BasketController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +27,7 @@ class BasketController extends Controller
 
         Customer::firstOrCreate(['user_id' => $user_id]);
 
-        $customer = Customer::where('user_id', $user_id)->get();
+        $customer = Customer::where('user_id', $user_id)->first();
 
         $basketsContent = Basket::where('customer_id', $customer->id)->get();
 
@@ -65,7 +69,7 @@ class BasketController extends Controller
 
         Customer::firstOrCreate(['user_id' => $user_id]);
 
-        $customer = Customer::where('user_id', $user_id)->get();
+        $customer = Customer::where('user_id', $user_id)->first();
 
         $product = Product::where('id', $request->product_id)->first();
 
@@ -93,7 +97,7 @@ class BasketController extends Controller
 
         Customer::firstOrCreate(['user_id' => $user_id]);
 
-        $customer = Customer::where('user_id', $user_id)->get();
+        $customer = Customer::where('user_id', $user_id)->first();
 
         $basketsContent = Basket::where('customer_id', $customer->id)
             ->join('products', 'baskets.product_id', '=', 'products.id')
