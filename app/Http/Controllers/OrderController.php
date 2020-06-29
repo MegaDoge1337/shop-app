@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Basket;
+use App\Customer;
 use App\Order;
 use App\Product;
+use App\Seller;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -63,5 +65,75 @@ class OrderController extends Controller
             ->delete();
 
         return redirect('/customer/orders');
+    }
+
+    public function ordersForSeller(Request $request)
+    {
+        $user_id = $request->user()->id;
+
+        $seller = Seller::firstOrCreate(['user_id' => $user_id])->first()->id;
+
+        $orders = Order::where('seller_id', $seller)
+            ->get();
+
+        $ordersProducts = [];
+
+        foreach ($orders as $order)
+        {
+            $products = json_decode($order->products_id);
+
+            $ordersProducts[$order->id] = [];
+
+            foreach ($products as $product)
+            {
+                $productInfo = Product::where('id', $product)->first();
+
+                if($productInfo)
+                {
+                    $ordersProducts[$order->id][] = $productInfo;
+                }
+            }
+        }
+
+        $data['orders'] = $orders;
+        $data['ordersProducts'] = $ordersProducts;
+
+        return view('order.list', $data);
+    }
+
+    public function ordersForCustomer(Request $request)
+    {
+        $user_id = $request->user()->id;
+
+        Customer::firstOrCreate(['user_id' => $user_id])->first()->id;
+
+        $customer = Customer::where('user_id', $user_id)->first()->id;
+
+        $orders = Order::where('customer_id', $customer)
+            ->get();
+
+        $ordersProducts = [];
+
+        foreach ($orders as $order)
+        {
+            $products = json_decode($order->products_id);
+
+            $ordersProducts[$order->id] = [];
+
+            foreach ($products as $product)
+            {
+                $productInfo = Product::where('id', $product)->first();
+
+                if($productInfo)
+                {
+                    $ordersProducts[$order->id][] = $productInfo;
+                }
+            }
+        }
+
+        $data['orders'] = $orders;
+        $data['ordersProducts'] = $ordersProducts;
+
+        return view('order.list', $data);
     }
 }

@@ -21,7 +21,9 @@ class BasketController extends Controller
     {
         $user_id = $request->user()->id;
 
-        $customer = Customer::firstOrCreate(['user_id' => $user_id]);
+        Customer::firstOrCreate(['user_id' => $user_id]);
+
+        $customer = Customer::where('user_id', $user_id)->get();
 
         $basketsContent = Basket::where('customer_id', $customer->id)->get();
 
@@ -61,7 +63,9 @@ class BasketController extends Controller
 
         $user_id = $request->user()->id;
 
-        $customer = Customer::firstOrCreate(['user_id' => $user_id]);
+        Customer::firstOrCreate(['user_id' => $user_id]);
+
+        $customer = Customer::where('user_id', $user_id)->get();
 
         $product = Product::where('id', $request->product_id)->first();
 
@@ -87,7 +91,9 @@ class BasketController extends Controller
     {
         $user_id = $request->user()->id;
 
-        $customer = Customer::firstOrCreate(['user_id' => $user_id]);
+        Customer::firstOrCreate(['user_id' => $user_id]);
+
+        $customer = Customer::where('user_id', $user_id)->get();
 
         $basketsContent = Basket::where('customer_id', $customer->id)
             ->join('products', 'baskets.product_id', '=', 'products.id')
