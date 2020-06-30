@@ -25,4 +25,24 @@ class Seller extends Model
     protected $fillable = [
         'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    public function seller()
+    {
+        return $this->hasOne('App\Seller');
+    }
+
+    public function product()
+    {
+        return $this->hasMany('App\Product');
+    }
+
+    public function order()
+    {
+        return $this->hasMany('App\Order');
+    }
 }

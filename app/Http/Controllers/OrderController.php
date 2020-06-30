@@ -56,7 +56,6 @@ class OrderController extends Controller
         $data = [
             'seller_id' => $seller_id,
             'customer_id' => $customer_id,
-            'customer_name' => 'DELETE',
             'customer_address' => $address,
             'products_id' => $products_json,
             'amount' => $amount

@@ -62,21 +62,6 @@
                                 <a class="dropdown-item" href="{{ route('home') }}">
                                     {{ __('Home') }}
                                 </a>
-                                <a class="dropdown-item" href="{{ route('seller.index') }}">
-                                    {{ __('My products') }}
-                                </a>
-                                <a class="dropdown-item" href="{{ route('seller.create') }}">
-                                    {{ __('Add product') }}
-                                </a>
-                                <a class="dropdown-item" href="{{ route('customer.orders') }}">
-                                    {{ __('Customer: orders') }}
-                                </a>
-                                <a class="dropdown-item" href="{{ route('seller.orders') }}">
-                                    {{ __('Seller: orders') }}
-                                </a>
-                                <a class="dropdown-item" href="{{ route('basket.index') }}">
-                                    {{ __('Basket') }}
-                                </a>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -89,6 +74,36 @@
                                 </form>
                             </div>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                Seller <span class="caret"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('seller.index') }}">
+                                    {{ __('My products') }}
+                                </a>
+                                <a class="dropdown-item" href="{{ route('seller.orders') }}">
+                                    {{ __('Orders') }}
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                Customer <span class="caret"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('customer.orders') }}">
+                                    {{ __('Orders') }}
+                                </a>
+                            </div>
+                        </li>
+                        <ul class="nav justify-content-end">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ route('basket.index') }}">Cart</a>
+                            </li>
+                        </ul>
                     @endguest
                 </ul>
             </div>

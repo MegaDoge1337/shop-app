@@ -34,4 +34,9 @@ class Product extends Model
         'price',
         'existence',
     ];
+
+    public function seller()
+    {
+        return $this->belongsTo('App\Seller');
+    }
 }

@@ -40,4 +40,14 @@ class Order extends Model
         'products_id',
         'amount',
     ];
+
+    public function seller()
+    {
+        return $this->hasOne('App\Seller');
+    }
+
+    public function user()
+    {
+        return $this->hasOne('App\User');
+    }
 }

@@ -81,8 +81,7 @@ class BasketController extends Controller
 
         Basket::create($data);
 
-        return Redirect::to('basket')
-            ->with('success','Greate! Product created successfully.');
+        return \redirect()->back();
     }
 
     /**
@@ -104,8 +103,6 @@ class BasketController extends Controller
             ->get()->where('seller_id', $id)->all();
 
         $data['basket'] = $basketsContent;
-
-        //dd($basketsContent);
 
         return view('basket.items', $data);
     }
