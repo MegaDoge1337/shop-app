@@ -29,6 +29,22 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12">
+                                    <div class="form-group">
+                                        <strong>Description</strong>
+                                        <input type="text" name="description" class="form-control"
+                                               placeholder="Enter Description" value="{{ $product->description }}">
+                                        <span class="text-danger">{{ $errors->first('description') }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <strong>Image URL</strong>
+                                        <input type="text" name="image_url" class="form-control"
+                                               placeholder="Enter Image URL" value="{{ $product->image_url }}">
+                                        <span class="text-danger">{{ $errors->first('image_url') }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
                             </div>

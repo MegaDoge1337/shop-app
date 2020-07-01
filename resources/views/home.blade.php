@@ -14,7 +14,7 @@
                         </div>
                     @endif
                         <div class="list-group">
-                            <a href="{{ route('home.contacts') }}" class="list-group-item list-group-item-action">Edit contacts information</a>
+                            <a href="{{ route('customer.contacts') }}" class="list-group-item list-group-item-action">Edit contacts information</a>
                         </div>
                 </div>
             </div>

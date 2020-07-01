@@ -18,6 +18,8 @@ class CreateProductsTable extends Migration
             $table->bigInteger('seller_id')->index();
             $table->string('title');
             $table->float('price');
+            $table->string('description');
+            $table->string('image_url');
             $table->tinyInteger('existence')->nullable();
             $table->timestamps();
         });

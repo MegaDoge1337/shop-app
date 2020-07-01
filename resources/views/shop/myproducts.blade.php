@@ -5,16 +5,19 @@
         <div class="row justify-content-center">
             <div class="row">
                 <div class="col-12">
+                    @if($warning)
+                        <div class="alert alert-warning" role="alert">
+                            {{ $warning }}
+                        </div>
+                    @endif
                     <div class="card">
-                        <div class="card-header">{{ $seller->name }} Products</div>
+                        <div class="card-header">My Products</div>
                         <div class="card-body">
                             <table class="table table-bordered" id="laravel_crud">
                                 <thead>
                                 <tr>
                                     <th>Title</th>
                                     <th>Price</th>
-                                    <th>Description</th>
-                                    <th>Image</th>
                                     <th>Created at</th>
                                     <th>Updated at</th>
                                     <th>Action</th>
@@ -30,16 +33,10 @@
                                         <td>{{ date('Y-m-d', strtotime($product->created_at)) }}</td>
                                         <td>{{ date('Y-m-d', strtotime($product->updated_at)) }}</td>
                                         <td>
-                                            <form action="{{ route('basket.store')}}" method="post">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="seller_id" value="{{ $product->seller_id }}">
-                                                <button class="btn btn-primary" type="submit">
-                                                    @if($inBasket[$product->id])
-                                                        In Basket
-                                                    @else
-                                                        Add to Basket
-                                                    @endif
+                                            <form action="{{ route('shop.show', $product->seller_id)  }}" method="get">
+                                                <input type="hidden" name="warning" value="You can't add to basket your own product!">
+                                                <button class="btn btn-primary" type="submit">Add to
+                                                    cart
                                                 </button>
                                             </form>
                                         </td>

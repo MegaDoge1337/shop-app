@@ -31,11 +31,6 @@ class Seller extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function seller()
-    {
-        return $this->hasOne('App\Seller');
-    }
-
     public function product()
     {
         return $this->hasMany('App\Product');
@@ -44,5 +39,10 @@ class Seller extends Model
     public function order()
     {
         return $this->hasMany('App\Order');
+    }
+
+    public function basket()
+    {
+        return $this->hasMany('App\Basket', 'seller_id');
     }
 }

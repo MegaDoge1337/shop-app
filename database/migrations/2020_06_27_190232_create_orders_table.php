@@ -20,6 +20,7 @@ class CreateOrdersTable extends Migration
             $table->string('customer_address');
             $table->json('products_id');
             $table->float('amount');
+            $table->integer('status');
             $table->timestamps();
         });
     }

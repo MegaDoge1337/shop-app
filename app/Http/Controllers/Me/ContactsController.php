@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Me;
 
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
 
 class ContactsController extends Controller
 {
@@ -20,9 +21,9 @@ class ContactsController extends Controller
      */
     public function index(Request $request)
     {
-        $data['user'] = User::where('id', $request->user()->id)->get()->first();
-
-        return view('me.contacts.index', $data);
+        return view('me.contacts.index', [
+            'user' => User::find(\Auth::id())
+        ]);
     }
 
     /**
@@ -35,25 +36,23 @@ class ContactsController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'nullable|numeric',
-            'address' => 'required|max:255'
+            'address' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return redirect('/home/edit/contacts/')
+            return redirect('/customer/edit/contacts/')
                 ->withErrors($validator)
                 ->withInput();
         }
 
         $update = [
-            'phone_number' => $request->phone_number,
             'address' => $request->address
         ];
 
         User::where('id', $id)->update($update);
 
-        return redirect('/home/edit/contacts/')
-            ->with('scs_message', 'Information has been changed.');
+        return redirect('/customer/edit/contacts/')
+            ->with('success', 'Information has been changed!');
     }
 
 }

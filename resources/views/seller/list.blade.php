@@ -8,11 +8,14 @@
                     <div class="card">
                         <div class="card-header">My Products</div>
                         <div class="card-body">
+                            <a href="{{ route('seller.create') }}" class="btn btn-success">Add Product</a><br><br>
                             <table class="table table-bordered" id="laravel_crud">
                                 <thead>
                                 <tr>
                                     <th>Title</th>
                                     <th>Price</th>
+                                    <th>Description</th>
+                                    <th>Image</th>
                                     <th>Created at</th>
                                     <th>Updated at</th>
                                     <td colspan="2">
@@ -25,13 +28,15 @@
                                     <tr>
                                         <td>{{ $product->title }}</td>
                                         <td>{{ $product->price }}</td>
+                                        <td>{{ $product->description }}</td>
+                                        <td><img src="{{ $product->image_url }}"></td>
                                         <td>{{ date('Y-m-d', strtotime($product->created_at)) }}</td>
                                         <td>{{ date('Y-m-d', strtotime($product->updated_at)) }}</td>
                                         <td>
                                             <a href="{{ route('seller.edit',$product->id)}}" class="btn btn-primary">Edit</a>
                                         </td>
                                         <td>
-                                            <form action="{{ route('seller.destroy', $product->id)}}" method="post">
+                                            <form action="{{ route('seller.destroy', $product->id) }}" method="post">
                                                 {{ csrf_field() }}
                                                 @method('DELETE')
                                                 <button class="btn btn-danger" type="submit">Delete</button>

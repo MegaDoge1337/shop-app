@@ -39,15 +39,20 @@ class Order extends Model
         'customer_address',
         'products_id',
         'amount',
+        'status',
+    ];
+
+    protected $casts = [
+        'products_id' => 'array',
     ];
 
     public function seller()
     {
-        return $this->hasOne('App\Seller');
+        return $this->belongsTo('App\Seller');
     }
 
     public function user()
     {
-        return $this->hasOne('App\User');
+        return $this->belongsTo('App\User', 'customer_id');
     }
 }

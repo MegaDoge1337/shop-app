@@ -59,9 +59,6 @@
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('home') }}">
-                                    {{ __('Home') }}
-                                </a>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -80,11 +77,11 @@
                                 Seller <span class="caret"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('seller.index') }}">
-                                    {{ __('My products') }}
-                                </a>
                                 <a class="dropdown-item" href="{{ route('seller.orders') }}">
                                     {{ __('Orders') }}
+                                </a>
+                                <a class="dropdown-item" href="{{ route('seller.index') }}">
+                                    {{ __('My products') }}
                                 </a>
                             </div>
                         </li>
@@ -94,14 +91,17 @@
                                 Customer <span class="caret"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('home') }}">
+                                    {{ __('Home') }}
+                                </a>
                                 <a class="dropdown-item" href="{{ route('customer.orders') }}">
-                                    {{ __('Orders') }}
+                                    {{ __('My orders') }}
                                 </a>
                             </div>
                         </li>
                         <ul class="nav justify-content-end">
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('basket.index') }}">Cart</a>
+                                <a class="nav-link active" href="{{ route('basket.index') }}">Basket</a>
                             </li>
                         </ul>
                     @endguest

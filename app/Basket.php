@@ -33,4 +33,14 @@ class Basket extends Model
         'customer_id',
         'product_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'customer_id');
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo('App\Seller', 'seller_id');
+    }
 }

@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Me;
 
 use App\Product;
 use App\Seller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use App\Http\Controllers\Controller;
 
 class SellerController extends Controller
 {
@@ -20,18 +22,16 @@ class SellerController extends Controller
      */
     public function index(Request $request)
     {
-        $seller_info = Seller::where('user_id', $request->user()->id)->first();
+        $seller = User::find(\Auth::id())
+            ->seller()
+            ->first();
 
-        if($seller_info)
-        {
-            $seller_id = $seller_info->id;
-
-            $data['products'] = Product::orderBy('created_at','desc')->where('seller_id', $seller_id)->paginate(10);
-
-            return view('seller.list',$data);
-        }
-
-        return \redirect('seller/create');
+        return view('seller.list',[
+            'products' => Seller::find($seller->id)
+                ->product()
+                ->orderBy('created_at', 'desc')
+                ->paginate(10),
+        ]);
     }
 
     /**
@@ -52,23 +52,25 @@ class SellerController extends Controller
      */
     public function store(Request $request)
     {
-        Seller::firstOrCreate(['user_id' => $request->user()->id]);
-
         $request->validate([
             'title' => 'required',
             'price' => 'required',
+            'description' => 'required',
+            'image_url' => 'required',
         ]);
 
         $data = [
-            'seller_id' => Seller::where('user_id', $request->user()->id)->first()->id,
+            'seller_id' => Seller::firstWhere('user_id', \Auth::id())->id,
             'title' => $request->title,
             'price' => $request->price,
+            'description' => $request->description,
+            'image_url' => $request->image_url,
         ];
 
         Product::create($data);
 
         return Redirect::to('seller')
-            ->with('success','Greate! Product created successfully.');
+            ->with('success','Product created successfully!');
     }
 
     /**
@@ -88,11 +90,11 @@ class SellerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit($id)
     {
-        $data['product'] = Product::where('id', $id)->first();
+        $data['product'] = Product::firstWhere('id', $id);
 
-        $seller_id = Seller::where('user_id', $request->user()->id)->first()->id;
+        $seller_id = Seller::firstWhere('user_id', \Auth::id())->id;
 
         if($data['product']->seller_id != $seller_id)
         {
@@ -114,28 +116,37 @@ class SellerController extends Controller
         $request->validate([
             'title' => 'required',
             'price' => 'required',
+            'description' => 'required',
+            'image_url' => 'required',
         ]);
 
         $update = [
             'title' => $request->title,
-            'price' => $request->price
+            'price' => $request->price,
+            'description' => $request->description,
+            'image_url' => $request->image_url,
         ];
+
         Product::where('id', $id)->update($update);
 
         return Redirect::to('seller')
-            ->with('success','Great! Product updated successfully');
+            ->with('success','Product updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        Product::where('id',$id)->delete();
+        Seller::firstWhere('user_id', \Auth::id())
+            ->product()
+            ->where('id', $id)
+            ->delete();
 
-        return Redirect::to('seller')->with('success','Product deleted successfully');
+        return Redirect::to('seller')
+            ->with('success','Product deleted successfully!');
     }
 }
