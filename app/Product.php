@@ -41,4 +41,9 @@ class Product extends Model
     {
         return $this->belongsTo('App\Seller');
     }
+
+    public function basket()
+    {
+        return $this->hasOne('App\Product', 'product_id');
+    }
 }

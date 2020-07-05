@@ -16,22 +16,25 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($sellers_info as $id => $seller)
+                                @foreach($baskets as $shopTitle => $basket)
                                     <tr>
                                         <td>
-                                            <h3>{{ $seller }}</h3>
+                                            <h3>{{ $shopTitle }}</h3>
                                             <ul>
-                                            @foreach($products[$id] as $product)
-                                                <li>{{ $product->title }} (Price: {{ $product->price }})</li>
-                                            @endforeach
-                                                <li><b>Total: {{ $total_prices[$id] }}</b></li>
+                                                @foreach($basket as $key => $product)
+                                                    @if($key === "sum")
+                                                        <li><b>Total sum: {{ $product }}</b></li>
+                                                    @else
+                                                        <li>{{ $product->title }} (Price: {{ $product->price }})</li>
+                                                    @endif
+                                                @endforeach
                                             </ul>
                                         </td>
                                         <td align="center">
                                             <form action="{{ route('order.make') }}" method="post">
                                                 @csrf
-                                                <input type="hidden" name="customer_id" value="{{ $customer_id }}">
-                                                <input type="hidden" name="seller_id" value="{{ $id}}">
+                                                <input type="hidden" name="customer_id" value="{{ $customer }}">
+                                                <input type="hidden" name="shopName" value="{{ $shopTitle }}">
                                                 <button class="btn btn-primary" type="submit">Make order</button>
                                             </form>
                                         </td>

@@ -43,4 +43,9 @@ class Basket extends Model
     {
         return $this->belongsTo('App\Seller', 'seller_id');
     }
+
+    public function product()
+    {
+        return $this->belongsTo('App\Product');
+    }
 }

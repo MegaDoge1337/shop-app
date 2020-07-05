@@ -6,79 +6,49 @@ use App\Basket;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Seller;
+use App\Services\TotalSumCalculator;
 use App\User;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller
 {
-    public function __construct()
+    protected TotalSumCalculator $sumCalculator;
+
+    public function __construct(TotalSumCalculator $sumCalculator)
     {
         $this->middleware('auth');
+
+        $this->sumCalculator = $sumCalculator;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
+    public function index(TotalSumCalculator $sumCalculator)
     {
-        $baskets = User::find(\Auth::id())->basket()->get();
 
-        $sellersInfo = [];
+        $baskets = [];
 
-        $basketProducts = [];
+        \Auth::user()
+            ->basket()
+            ->each(function ($basket) use (&$baskets) {
 
-        $products = [];
+                $product = $basket->product()->first();
 
-        $totalPrices = [];
+                $shopTitle = Seller::find($product->seller_id)->user()->first()->name;
 
-        foreach ($baskets as $basket) {
+                $baskets[$shopTitle][] = $product;
 
-            if (array_key_exists($basket->seller_id, $sellersInfo)) continue;
+            });
 
-            $sellersInfo[$basket->seller_id] =
-                Seller::find($basket->seller_id)
-                    ->user()
-                    ->first()
-                    ->name;
-
-            $basketProducts[$basket->seller_id] = Basket::where('seller_id', $basket->seller_id)
-                ->where('customer_id', \Auth::id())
-                ->get();
-        }
-
-        foreach ($baskets as $basket)
+        foreach ($baskets as $shopTitle => $basket)
         {
-            if (array_key_exists($basket->seller_id, $products)) continue;
-
-            foreach ($basketProducts[$basket->seller_id] as $product)
-            {
-                $products[$basket->seller_id][] = Product::where('id', $product->product_id)->first();
-            }
-
-            $totalPrices[$basket->seller_id] = 0;
-
-           foreach($products[$basket->seller_id] as $product)
-           {
-               $totalPrices[$basket->seller_id] += $product->price;
-           }
+            $baskets[$shopTitle]['sum'] = $sumCalculator->handler($basket);
         }
 
         return view('basket.list', [
-            'products' => $products,
-            'total_prices' => $totalPrices,
-            'sellers_info' => $sellersInfo,
-            'customer_id' => \Auth::id()
+            'baskets' => $baskets,
+            'customer' => \Auth::id(),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $product = Product::find($request->product_id);
@@ -94,12 +64,6 @@ class BasketController extends Controller
         return \redirect()->back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
