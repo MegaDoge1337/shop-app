@@ -21,15 +21,15 @@ Auth::routes();
 
 Route::get('/home', 'Me\HomeController@index')->name('home');
 
-Route::get('/customer/edit/contacts', 'Me\ContactsController@index')->name('customer.contacts');
-Route::patch('/customer/contacts/{contacts}', 'Me\ContactsController@update')->name('contacts.update');
+Route::get('/customer/orders', 'Me\CustomerController@ordersForCustomer')->name('customer.orders');
+Route::get('/customer/edit/contacts', 'Me\CustomerController@index')->name('customer.contacts');
+Route::patch('/customer/contacts/{contacts}', 'Me\CustomerController@update')->name('customer.update');
 
 Route::post('/order/make', 'Shop\OrderController@make')->name('order.make');
 Route::post('/order/update', 'Shop\OrderController@changeStatus')->name('order.update');
 Route::post('/order', 'Shop\OrderController@store')->name('order.store');
-Route::get('/customer/orders', 'Shop\OrderController@ordersForCustomer')->name('customer.orders');
 
-Route::get('/seller/orders', 'Shop\OrderController@ordersForSeller')->name('seller.orders');
+Route::get('/seller/orders', 'Me\SellerController@ordersForSeller')->name('seller.orders');
 Route::resource('seller', 'Me\SellerController');
 
 Route::get('/shop', 'Shop\ShopController@index')->name('shop.index');

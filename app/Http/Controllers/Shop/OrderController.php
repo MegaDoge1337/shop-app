@@ -6,14 +6,20 @@ use App\Basket;
 use App\Order;
 use App\Product;
 use App\Http\Controllers\Controller;
+use App\Seller;
+use App\Services\TotalSumCalculator;
 use App\User;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function __construct()
+    protected TotalSumCalculator $sumCalculator;
+
+    public function __construct(TotalSumCalculator $sumCalculator)
     {
         $this->middleware('auth');
+
+        $this->sumCalculator = $sumCalculator;
     }
     /**
      * Show the form for creating a new resource.
@@ -23,7 +29,7 @@ class OrderController extends Controller
     public function make(Request $request)
     {
         return view('order.make', [
-            'seller_id' => $request->seller_id,
+            'seller_id' => User::where('name', $request->shop_title)->first()->id,
             'address' => User::find(\Auth::id())->address,
             ]);
     }
@@ -34,39 +40,36 @@ class OrderController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, TotalSumCalculator $sumCalculator)
     {
+
         $data = [
             'seller_id' => $request->seller_id,
             'customer_id' => \Auth::id(),
             'customer_address' => $request->address,
-            'products_id' => '',
-            'amount' => '',
+            'products' => '',
+            'total_sum' => '',
             'status' => '1',
         ];
 
-        $baskets = Basket::where('seller_id', $data['seller_id'])
-            ->where('customer_id', $data['customer_id'])
-            ->get();
+        $basket = [];
 
-        $amount = 0;
-        $productsList = [];
+        \Auth::user()
+            ->basket()
+            ->where('seller_id', $request->seller_id)
+            ->each(function ($baskets) use (&$basket) {
 
-        foreach ($baskets as $basket) {
+                $product = $baskets->product()->first();
 
-            $amount += Product::where('id', $basket->product_id)
-                ->first()
-                ->price;
+                $basket[] = $product;
 
-            $productsList[] = $basket->product_id;
-        }
+            });
 
-        $data['products_id'] = $productsList;
-        $data['amount'] = $amount;
+        $data['total_sum'] = $sumCalculator->handler($basket);
 
         $order = Order::find(Order::create($data)->id);
 
-        $order->products_id = $productsList;
+        $order->products = $basket;
 
         $order->save();
 
@@ -75,78 +78,6 @@ class OrderController extends Controller
             ->delete();
 
         return redirect('/customer/orders');
-    }
-
-    public function ordersForSeller()
-    {
-        $orders = Order::where('seller_id', User::find(\Auth::id())->seller()->first()->id)->get();
-
-        $ordersProducts = [];
-
-        $userInfo = [];
-
-        foreach ($orders as $order)
-        {
-            $customer = Order::find($order->id)->user()->first();
-
-            $userInfo[$customer->id] = $customer;
-
-            $products = $order->products_id;
-
-            $ordersProducts[$order->id] = [];
-
-            foreach ($products as $product)
-            {
-                $productInfo = Product::find($product);
-
-                if($productInfo)
-                {
-                    $ordersProducts[$order->id][] = $productInfo;
-                }
-            }
-        }
-
-        return view('order.seller_list', [
-            'orders' => $orders,
-            'orders_products' => $ordersProducts,
-            'user_info' => $userInfo,
-        ]);
-    }
-
-    public function ordersForCustomer()
-    {
-        $orders = User::find(\Auth::id())->order()->get();
-
-        $ordersProducts = [];
-
-        $userInfo = [];
-
-        foreach ($orders as $order)
-        {
-            $seller = Order::find($order->id)->seller()->first();
-
-            $userInfo[$seller->id] = User::find($seller->user_id);
-
-            $products = $order->products_id;
-
-            $ordersProducts[$order->id] = [];
-
-            foreach ($products as $product)
-            {
-                $productInfo = Product::find($product);
-
-                if($productInfo)
-                {
-                    $ordersProducts[$order->id][] = $productInfo;
-                }
-            }
-        }
-
-        return view('order.customer_list', [
-            'orders' => $orders,
-            'orders_products' => $ordersProducts,
-            'user_info' => $userInfo,
-        ]);
     }
 
     public function changeStatus(Request $request)

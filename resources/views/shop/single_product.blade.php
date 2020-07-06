@@ -17,10 +17,13 @@
                             <ul>
                                 <li><b>Price:</b> {{ $product->price }}</li>
                                 <li><b>Description: </b>{{ $product->description }}</li>
+                                <li><b>Image:</b></li>
                             </ul>
-                            <img src="{{ $product->image_url }}">
+                            <img src="{{ $product->image_url }}"><br><br>
+
                             @if($your_product)
-                                <form action="{{ route('shop.single', [$product->seller_id, $product->id])  }}" method="get">
+                                <form action="{{ route('shop.single', [$product->seller_id, $product->id])  }}"
+                                      method="get">
                                     <input type="hidden" name="warning"
                                            value="You can't add to basket your own product!">
                                     <button class="btn btn-primary" type="submit">Add to

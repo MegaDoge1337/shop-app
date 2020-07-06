@@ -37,13 +37,13 @@ class Order extends Model
         'customer_id',
         'customer_name',
         'customer_address',
-        'products_id',
-        'amount',
+        'products',
+        'total_sum',
         'status',
     ];
 
     protected $casts = [
-        'products_id' => 'array',
+        'products' => 'array',
     ];
 
     public function seller()

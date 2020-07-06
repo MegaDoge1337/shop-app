@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers\Me;
 
+use App\Order;
+use App\Product;
+use App\Seller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
-class ContactsController extends Controller
+class CustomerController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
         return view('me.contacts.index', [
@@ -26,13 +24,6 @@ class ContactsController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -53,6 +44,37 @@ class ContactsController extends Controller
 
         return redirect('/customer/edit/contacts/')
             ->with('success', 'Information has been changed!');
+    }
+
+    public function ordersForCustomer()
+    {
+        $orders = [];
+
+        User::find(\Auth::id())
+            ->order()
+            ->get()
+            ->each(function ($order) use (&$orders){
+
+                $seller = Seller::find($order->seller_id)->user()->first();
+
+                $orders[$order->id]["seller"] = $seller->name;
+
+                $orders[$order->id]["products"] = collect($order->products);
+
+                $orders[$order->id]["address"] = $order->customer_address;
+
+                $orders[$order->id]["date"] = $order->created_at;
+
+                $orders[$order->id]["sum"] = $order->total_sum;
+
+                $orders[$order->id]["status"] = $order->status;
+            });
+
+        //dd($orders);
+
+        return view('order.customer_list', [
+            'orders' => $orders,
+        ]);
     }
 
 }

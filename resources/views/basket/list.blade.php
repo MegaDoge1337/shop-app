@@ -9,12 +9,6 @@
                         <div class="card-header">Baskets List</div>
                         <div class="card-body">
                             <table class="table table-bordered" id="laravel_crud">
-                                <thead>
-                                <tr>
-                                    <th>Baskets</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
                                 <tbody>
                                 @foreach($baskets as $shopTitle => $basket)
                                     <tr>
@@ -34,7 +28,7 @@
                                             <form action="{{ route('order.make') }}" method="post">
                                                 @csrf
                                                 <input type="hidden" name="customer_id" value="{{ $customer }}">
-                                                <input type="hidden" name="shopName" value="{{ $shopTitle }}">
+                                                <input type="hidden" name="shop_title" value="{{ $shopTitle }}">
                                                 <button class="btn btn-primary" type="submit">Make order</button>
                                             </form>
                                         </td>
