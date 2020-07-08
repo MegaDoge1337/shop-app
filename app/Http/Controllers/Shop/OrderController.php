@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\Basket;
-use App\Order;
-use App\Product;
+use App\BasketModel;
+use App\OrderModel;
+use App\ProductModel;
 use App\Http\Controllers\Controller;
-use App\Seller;
+use App\SellerModel;
 use App\Services\TotalSumCalculator;
-use App\User;
+use App\UserModel;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -29,8 +29,8 @@ class OrderController extends Controller
     public function make(Request $request)
     {
         return view('order.make', [
-            'seller_id' => User::where('name', $request->shop_title)->first()->id,
-            'address' => User::find(\Auth::id())->address,
+            'seller_id' => UserModel::where('name', $request->shop_title)->first()->id,
+            'address' => UserModel::find(\Auth::id())->address,
             ]);
     }
 
@@ -67,13 +67,13 @@ class OrderController extends Controller
 
         $data['total_sum'] = $sumCalculator->handler($basket);
 
-        $order = Order::find(Order::create($data)->id);
+        $order = OrderModel::find(OrderModel::create($data)->id);
 
         $order->products = $basket;
 
         $order->save();
 
-        Basket::where('seller_id', $data['seller_id'])
+        BasketModel::where('seller_id', $data['seller_id'])
             ->where('customer_id', $data['customer_id'])
             ->delete();
 
@@ -82,7 +82,7 @@ class OrderController extends Controller
 
     public function changeStatus(Request $request)
     {
-        $order = Order::find($request->order_id);
+        $order = OrderModel::find($request->order_id);
 
         $order->status = $request->status;
 

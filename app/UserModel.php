@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
- * App\User
+ * App\UserModel
  *
  * @property int $id
  * @property string $name
@@ -19,24 +19,24 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property string|null $phone_number
  * @property string|null $address
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePhoneNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\UserModel wherePhoneNumber($value)
  */
-class User extends Authenticatable
+class UserModel extends Authenticatable
 {
     use Notifiable;
 
@@ -69,16 +69,16 @@ class User extends Authenticatable
 
     public function seller()
     {
-        return $this->hasOne('App\Seller');
+        return $this->hasOne('App\SellerModel');
     }
 
     public function order()
     {
-        return $this->hasMany('App\Order', 'customer_id');
+        return $this->hasMany('App\OrderModel', 'customer_id');
     }
 
     public function basket()
     {
-        return $this->hasMany('App\Basket', 'customer_id');
+        return $this->hasMany('App\BasketModel', 'customer_id');
     }
 }

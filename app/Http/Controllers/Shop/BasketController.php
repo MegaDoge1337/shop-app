@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\Basket;
+use App\BasketModel;
 use App\Http\Controllers\Controller;
-use App\Product;
-use App\Seller;
+use App\ProductModel;
+use App\SellerModel;
 use App\Services\TotalSumCalculator;
-use App\User;
+use App\UserModel;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller
@@ -32,7 +32,7 @@ class BasketController extends Controller
 
                 $product = $basket->product()->first();
 
-                $shopTitle = Seller::find($product->seller_id)->user()->first()->name;
+                $shopTitle = SellerModel::find($product->seller_id)->user()->first()->name;
 
                 $baskets[$shopTitle][] = $product;
 
@@ -51,7 +51,7 @@ class BasketController extends Controller
 
     public function store(Request $request)
     {
-        $product = Product::find($request->product_id);
+        $product = ProductModel::find($request->product_id);
 
         $data = [
             'seller_id' => $request->seller_id,
@@ -59,7 +59,7 @@ class BasketController extends Controller
             'product_id' => $product->id,
         ];
 
-        Basket::create($data);
+        BasketModel::create($data);
 
         return \redirect()->back();
     }

@@ -12,12 +12,12 @@ class UserSeeder extends Seeder
     public function run()
     {
         $sellersCallback = function ($user) {
-            $user->seller()->save(factory(App\Seller::class)->make());
+            $user->seller()->save(factory(App\SellerModel::class)->make());
         };
 
-        factory(App\User::class, 5)->create()->each($sellersCallback)->each(
+        factory(App\UserModel::class, 5)->create()->each($sellersCallback)->each(
             function ($user) {
-                $user->seller->product()->saveMany(factory(App\Product::class, 5)->make());
+                $user->seller->product()->saveMany(factory(App\ProductModel::class, 5)->make());
             }
         );
     }

@@ -3,7 +3,7 @@
 
 namespace App\Listeners;
 
-use App\Seller;
+use App\SellerModel;
 use Illuminate\Auth\Events\Registered;
 
 class MakeUserASellerNotificator
@@ -16,6 +16,6 @@ class MakeUserASellerNotificator
      */
     public function handle(Registered $event)
     {
-        Seller::create(['user_id' => $event->user->id]);
+        SellerModel::create(['user_id' => $event->user->id]);
     }
 }

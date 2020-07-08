@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Me;
 
 use App\Http\Controllers\Controller;
-use App\Order;
-use App\Product;
-use App\Seller;
-use App\User;
+use App\OrderModel;
+use App\ProductModel;
+use App\SellerModel;
+use App\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -26,12 +26,12 @@ class SellerController extends Controller
      */
     public function index(Request $request)
     {
-        $seller = User::find(\Auth::id())
+        $seller = UserModel::find(\Auth::id())
             ->seller()
             ->first();
 
         return view('seller.list', [
-            'products' => Seller::find($seller->id)
+            'products' => SellerModel::find($seller->id)
                 ->product()
                 ->orderBy('created_at', 'desc')
                 ->paginate(10),
@@ -53,17 +53,17 @@ class SellerController extends Controller
         ]);
 
         $data = [
-            'seller_id' => Seller::firstWhere('user_id', \Auth::id())->id,
+            'seller_id' => SellerModel::firstWhere('user_id', \Auth::id())->id,
             'title' => $request->title,
             'price' => $request->price,
             'description' => $request->description,
             'image_url' => $request->image_url,
         ];
 
-        Product::create($data);
+        ProductModel::create($data);
 
         return Redirect::to('seller')
-            ->with('success', 'Product created successfully!');
+            ->with('success', 'ProductModel created successfully!');
     }
 
     public function show($id)
@@ -73,9 +73,9 @@ class SellerController extends Controller
 
     public function edit($id)
     {
-        $data['product'] = Product::firstWhere('id', $id);
+        $data['product'] = ProductModel::firstWhere('id', $id);
 
-        $seller_id = Seller::firstWhere('user_id', \Auth::id())->id;
+        $seller_id = SellerModel::firstWhere('user_id', \Auth::id())->id;
 
         if ($data['product']->seller_id != $seller_id) {
             return \redirect('seller');
@@ -100,32 +100,32 @@ class SellerController extends Controller
             'image_url' => $request->image_url,
         ];
 
-        Product::where('id', $id)->update($update);
+        ProductModel::where('id', $id)->update($update);
 
         return Redirect::to('seller')
-            ->with('success', 'Product updated successfully');
+            ->with('success', 'ProductModel updated successfully');
     }
 
     public function destroy($id)
     {
-        Seller::firstWhere('user_id', \Auth::id())
+        SellerModel::firstWhere('user_id', \Auth::id())
             ->product()
             ->where('id', $id)
             ->delete();
 
         return Redirect::to('seller')
-            ->with('success', 'Product deleted successfully!');
+            ->with('success', 'ProductModel deleted successfully!');
     }
 
     public function ordersForSeller()
     {
         $orders = [];
 
-        Order::where('seller_id', \Auth::user()->seller()->first()->id)
+        OrderModel::where('seller_id', \Auth::user()->seller()->first()->id)
             ->get()
             ->each(function ($order) use (&$orders){
 
-                $customer = User::find($order->customer_id)->first();
+                $customer = UserModel::find($order->customer_id)->first();
 
                 $orders[$order->id]["customer"] = $customer->name;
 

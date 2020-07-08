@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\Basket;
-use App\Product;
-use App\Seller;
-use App\User;
+use App\BasketModel;
+use App\ProductModel;
+use App\SellerModel;
+use App\UserModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -22,7 +22,7 @@ class ShopController extends Controller
      */
     public function index()
     {
-        $shops = User::join('sellers', 'sellers.user_id', '=', 'users.id')
+        $shops = UserModel::join('sellers', 'sellers.user_id', '=', 'users.id')
             ->get()->all();
 
         $data['shops'] = $shops;
@@ -38,15 +38,15 @@ class ShopController extends Controller
      */
     public function show($id, Request $request)
     {
-        $seller = Seller::where('user_id', \Auth::id())->first();
+        $seller = SellerModel::where('user_id', \Auth::id())->first();
 
-        $products = Product::where('seller_id', $id)->orderBy('created_at','desc')->paginate(10);
+        $products = ProductModel::where('seller_id', $id)->orderBy('created_at','desc')->paginate(10);
 
         $inBasket = [];
 
         foreach ($products as $product)
         {
-            if(Basket::where('customer_id', \Auth::id())->where('product_id', $product->id)->first())
+            if(BasketModel::where('customer_id', \Auth::id())->where('product_id', $product->id)->first())
             {
                 $inBasket[$product->id] = true;
                 continue;
@@ -57,7 +57,7 @@ class ShopController extends Controller
         if($seller == null)
         {
             return view('shop.products',[
-                'seller' => Seller::find($id)->user()->first(),
+                'seller' => SellerModel::find($id)->user()->first(),
                 'products' => $products,
             ]);
         }
@@ -66,7 +66,7 @@ class ShopController extends Controller
         {
 
             return view('shop.products',[
-                'seller' => Seller::find($id)->user()->first(),
+                'seller' => SellerModel::find($id)->user()->first(),
                 'products' => $products,
                 'inBasket' => $inBasket,
             ]);
@@ -80,9 +80,9 @@ class ShopController extends Controller
 
     public function singleProduct($seller_id, $product_id, Request $request)
     {
-        $seller = Seller::where('user_id', \Auth::id())->first();
+        $seller = SellerModel::where('user_id', \Auth::id())->first();
 
-        $inBasket = Basket::where('customer_id', \Auth::id())
+        $inBasket = BasketModel::where('customer_id', \Auth::id())
             ->where('product_id', $product_id)
             ->first();
 
@@ -91,7 +91,7 @@ class ShopController extends Controller
         if($seller == null || $seller->id != $seller_id)
         {
             return view('shop.single_product',[
-                'product' => Product::find($product_id),
+                'product' => ProductModel::find($product_id),
                 'your_product' => 0,
                 'warning' => '',
                 'in_basket' => $inBasket,
@@ -99,7 +99,7 @@ class ShopController extends Controller
         }
 
         return view('shop.single_product',[
-            'product' => Product::find($product_id),
+            'product' => ProductModel::find($product_id),
             'your_product' => 1,
             'warning' => $request->warning ?? '',
             'in_basket' => $inBasket,

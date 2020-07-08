@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Me;
 
-use App\Order;
-use App\Product;
-use App\Seller;
-use App\User;
+use App\OrderModel;
+use App\ProductModel;
+use App\SellerModel;
+use App\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
@@ -20,7 +20,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         return view('me.contacts.index', [
-            'user' => User::find(\Auth::id())
+            'user' => UserModel::find(\Auth::id())
         ]);
     }
 
@@ -40,7 +40,7 @@ class CustomerController extends Controller
             'address' => $request->address
         ];
 
-        User::where('id', $id)->update($update);
+        UserModel::where('id', $id)->update($update);
 
         return redirect('/customer/edit/contacts/')
             ->with('success', 'Information has been changed!');
@@ -50,12 +50,12 @@ class CustomerController extends Controller
     {
         $orders = [];
 
-        User::find(\Auth::id())
+        UserModel::find(\Auth::id())
             ->order()
             ->get()
             ->each(function ($order) use (&$orders){
 
-                $seller = Seller::find($order->seller_id)->user()->first();
+                $seller = SellerModel::find($order->seller_id)->user()->first();
 
                 $orders[$order->id]["seller"] = $seller->name;
 
