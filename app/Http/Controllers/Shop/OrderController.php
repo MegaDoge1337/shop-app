@@ -8,7 +8,7 @@ use App\ProductModel;
 use App\Http\Controllers\Controller;
 use App\SellerModel;
 use App\Services\TotalSumCalculator;
-use App\UserModel;
+use App\User;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -29,8 +29,8 @@ class OrderController extends Controller
     public function make(Request $request)
     {
         return view('order.make', [
-            'seller_id' => UserModel::where('name', $request->shop_title)->first()->id,
-            'address' => UserModel::find(\Auth::id())->address,
+            'seller_id' => User::where('name', $request->shop_title)->first()->id,
+            'address' => User::find(\Auth::id())->address,
             ]);
     }
 

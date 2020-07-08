@@ -25,9 +25,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $product_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereCustomerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereProductId($value)
+ * @property-read \App\ProductModel $product
+ * @property-read \App\SellerModel $seller
+ * @property-read \App\User $user
  */
 class BasketModel extends Model
 {
+    protected $table = 'baskets';
+
     protected $fillable = [
         'seller_id',
         'customer_id',
@@ -36,7 +41,7 @@ class BasketModel extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\UserModel', 'customer_id');
+        return $this->belongsTo('App\User', 'customer_id');
     }
 
     public function seller()

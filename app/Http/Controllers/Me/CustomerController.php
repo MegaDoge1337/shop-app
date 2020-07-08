@@ -4,23 +4,29 @@ namespace App\Http\Controllers\Me;
 
 use App\OrderModel;
 use App\ProductModel;
+use App\Repositories\CustomerRepository;
 use App\SellerModel;
-use App\UserModel;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
 class CustomerController extends Controller
 {
-    public function __construct()
+
+    protected CustomerRepository $customerRepository;
+
+    public function __construct(CustomerRepository $customerRepository)
     {
         $this->middleware('auth');
+
+        $this->customerRepository = $customerRepository;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         return view('me.contacts.index', [
-            'user' => UserModel::find(\Auth::id())
+            'customer' => $this->customerRepository->makeEntity()
         ]);
     }
 
@@ -36,11 +42,11 @@ class CustomerController extends Controller
                 ->withInput();
         }
 
-        $update = [
-            'address' => $request->address
-        ];
+        $customer = $this->customerRepository->makeEntity();
 
-        UserModel::where('id', $id)->update($update);
+        $customer->address = $request->address;
+
+        $this->customerRepository->save($customer);
 
         return redirect('/customer/edit/contacts/')
             ->with('success', 'Information has been changed!');
@@ -50,7 +56,7 @@ class CustomerController extends Controller
     {
         $orders = [];
 
-        UserModel::find(\Auth::id())
+        User::find(\Auth::id())
             ->order()
             ->get()
             ->each(function ($order) use (&$orders){
@@ -69,8 +75,6 @@ class CustomerController extends Controller
 
                 $orders[$order->id]["status"] = $order->status;
             });
-
-        //dd($orders);
 
         return view('order.customer_list', [
             'orders' => $orders,

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Shop;
 use App\BasketModel;
 use App\ProductModel;
 use App\SellerModel;
-use App\UserModel;
+use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -22,7 +22,7 @@ class ShopController extends Controller
      */
     public function index()
     {
-        $shops = UserModel::join('sellers', 'sellers.user_id', '=', 'users.id')
+        $shops = User::join('sellers', 'sellers.user_id', '=', 'users.id')
             ->get()->all();
 
         $data['shops'] = $shops;

@@ -50,7 +50,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | UserModel Providers
+    | User Providers
     |--------------------------------------------------------------------------
     |
     | All authentication drivers have a contacts provider. This defines how the
@@ -68,7 +68,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\UserModel::class,
+            'model' => App\User::class,
         ],
 
         // 'users' => [

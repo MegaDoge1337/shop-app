@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\ProductModel;
 use App\SellerModel;
 use App\Services\TotalSumCalculator;
-use App\UserModel;
+use App\User;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller

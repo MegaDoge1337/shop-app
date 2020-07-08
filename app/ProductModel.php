@@ -25,9 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\ProductModel|null $basket
+ * @property-read \App\SellerModel $seller
  */
 class ProductModel extends Model
 {
+    protected $table = 'products';
+
     protected $fillable = [
         'seller_id',
         'title',

@@ -15,7 +15,7 @@
                     <div class="card-header">Edit Contacts Information</div>
 
                     <div class="card-body">
-                        <form action="{{ route('contacts.update', $user->id) }}" method="post" name="update_user">
+                        <form action="{{ route('customer.update', $customer->id) }}" method="post" name="update_user">
                             @csrf
                             @method('PATCH')
                             <div class="row">
@@ -24,7 +24,7 @@
                                                 <strong>Address</strong>
                                                 <input class="form-control" col="4" name="address"
                                                        placeholder="Enter Address"
-                                                       value="{{ $user->address }}">
+                                                       value="{{ $customer->address }}">
                                                 <span class="text-danger">{{ $errors->first('address') }}</span>
                                             </div>
                                         </div>

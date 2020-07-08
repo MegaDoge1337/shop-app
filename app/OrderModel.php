@@ -29,9 +29,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\OrderModel whereSellerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\OrderModel whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\SellerModel $seller
+ * @property-read \App\User $user
  */
 class OrderModel extends Model
 {
+    protected $table = 'orders';
+
     protected $fillable = [
         'seller_id',
         'customer_id',
@@ -53,6 +57,6 @@ class OrderModel extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\UserModel', 'customer_id');
+        return $this->belongsTo('App\User', 'customer_id');
     }
 }

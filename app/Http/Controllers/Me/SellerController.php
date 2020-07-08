@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\OrderModel;
 use App\ProductModel;
 use App\SellerModel;
-use App\UserModel;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -26,7 +26,7 @@ class SellerController extends Controller
      */
     public function index(Request $request)
     {
-        $seller = UserModel::find(\Auth::id())
+        $seller = User::find(\Auth::id())
             ->seller()
             ->first();
 
@@ -125,7 +125,7 @@ class SellerController extends Controller
             ->get()
             ->each(function ($order) use (&$orders){
 
-                $customer = UserModel::find($order->customer_id)->first();
+                $customer = User::find($order->customer_id)->first();
 
                 $orders[$order->id]["customer"] = $customer->name;
 
