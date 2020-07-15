@@ -7,14 +7,13 @@ use App\User;
 
 use App\Entities\CustomerEntity;
 
-class CustomerRepository
+class CustomerEloquentRepository implements CustomerRepositoryInterface
 {
-    public function makeEntity(CustomerModel $customer = null, User $user = null)
+    public function findById($id)
     {
-        return CustomerEntity::create(
-            $customer ?? \Auth::user()->customer()->first(),
-            $user ?? \Auth::user()
-        );
+        $user = User::findOrFail($id);
+
+        return new CustomerEntity($user->id, $user->name, $user->customer->address);
     }
 
     public function save(CustomerEntity $customerEntity)
@@ -23,7 +22,7 @@ class CustomerRepository
             'address' => $customerEntity->address
         ];
 
-        CustomerModel::find($customerEntity->id)->update($update);
+        CustomerModel::findOrNew($customerEntity->id)->update($update);
 
         return CustomerModel::find($customerEntity->id);
     }

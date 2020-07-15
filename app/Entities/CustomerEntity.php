@@ -2,21 +2,40 @@
 
 namespace App\Entities;
 
-use App\CustomerModel;
-use App\User;
-
 class CustomerEntity
 {
+    public int $id;
+    public string $name;
+    public string $address;
 
-    public function __construct(CustomerModel $customer, User $user)
+    public function __construct(int $id, string $name, string $address)
     {
-        $this->id = $customer->id;
-        $this->name = $user->name;
-        $this->address = $customer->address;
+        $this->id = $id;
+        $this->name = $name;
+        $this->address = $address;
     }
 
-    public static function create(CustomerModel $customer, User $user)
+    public function changeAddress(string $address)
     {
-        return new self($customer, $user);
+        //if(!$policy->allowUpdate($this)) throw new \Exception();
+        $this->address = $address;
     }
 }
+
+//class CustomerPolicy
+//{
+//    protected AuthService $authService;
+//
+//    public function allowUpdate(CustomerEntity $customer)
+//    {
+//        $auth = $this->authService->current();
+//
+//        if ($auth->isAdmin()) return true;
+//
+//        if (!$auth->hasId($this->id)) return false;
+//
+//        if ($this->banned) return false;
+//
+//        return true;
+//    }
+//}

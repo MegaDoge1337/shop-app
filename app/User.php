@@ -35,11 +35,12 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $address
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePhoneNumber($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\BasketModel[] $basket
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\BasketProductModel[] $basket
  * @property-read int|null $basket_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\OrderModel[] $order
  * @property-read int|null $order_count
  * @property-read \App\SellerModel|null $seller
+ * @property-read \App\CustomerModel|null $customer
  */
 class User extends Authenticatable
 {
@@ -59,7 +60,7 @@ class User extends Authenticatable
 
     public function customer()
     {
-        return $this->hasOne('App\CustomerModel');
+        return $this->hasOne(CustomerModel::class);
     }
 
     public function seller()
@@ -74,6 +75,6 @@ class User extends Authenticatable
 
     public function basket()
     {
-        return $this->hasMany('App\BasketModel', 'customer_id');
+        return $this->hasMany('App\BasketProductModel', 'customer_id');
     }
 }

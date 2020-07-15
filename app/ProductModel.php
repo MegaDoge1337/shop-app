@@ -27,6 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\ProductModel|null $basket
  * @property-read \App\SellerModel $seller
+ * @property string $description
+ * @property string $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereImageUrl($value)
  */
 class ProductModel extends Model
 {

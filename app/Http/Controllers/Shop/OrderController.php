@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\BasketModel;
+use App\BasketProductModel;
 use App\OrderModel;
 use App\ProductModel;
 use App\Http\Controllers\Controller;
@@ -21,11 +21,7 @@ class OrderController extends Controller
 
         $this->sumCalculator = $sumCalculator;
     }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function make(Request $request)
     {
         return view('order.make', [
@@ -34,12 +30,7 @@ class OrderController extends Controller
             ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request, TotalSumCalculator $sumCalculator)
     {
 
@@ -73,7 +64,7 @@ class OrderController extends Controller
 
         $order->save();
 
-        BasketModel::where('seller_id', $data['seller_id'])
+        BasketProductModel::where('seller_id', $data['seller_id'])
             ->where('customer_id', $data['customer_id'])
             ->delete();
 

@@ -31,6 +31,12 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\SellerModel $seller
  * @property-read \App\User $user
+ * @property array $products
+ * @property float $total_sum
+ * @property int $status
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\OrderModel whereProducts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\OrderModel whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\OrderModel whereTotalSum($value)
  */
 class OrderModel extends Model
 {

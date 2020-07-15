@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Repositories\BasketProductEloquentRepository;
+use App\Repositories\CustomerEloquentRepository;
+use App\Repositories\ProductEloquentRepository;
+use App\Repositories\BasketProductRepositoryInterface;
+use App\Repositories\CustomerRepositoryInterface;
+use App\Repositories\ProductRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(CustomerRepositoryInterface::class, CustomerEloquentRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductEloquentRepository::class);
+        $this->app->bind(BasketProductRepositoryInterface::class, BasketProductEloquentRepository::class);
     }
 
     /**

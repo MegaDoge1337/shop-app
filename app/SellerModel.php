@@ -19,13 +19,15 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\SellerModel whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\SellerModel whereUserId($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\BasketModel[] $basket
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\BasketProductModel[] $basket
  * @property-read int|null $basket_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\OrderModel[] $order
  * @property-read int|null $order_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\ProductModel[] $product
  * @property-read int|null $product_count
  * @property-read \App\User $user
+ * @property string|null $address
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\SellerModel whereAddress($value)
  */
 class SellerModel extends Model
 {
@@ -53,6 +55,6 @@ class SellerModel extends Model
 
     public function basket()
     {
-        return $this->hasMany('App\BasketModel', 'seller_id');
+        return $this->hasMany('App\BasketProductModel', 'seller_id');
     }
 }

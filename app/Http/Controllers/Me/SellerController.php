@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Me;
 use App\Http\Controllers\Controller;
 use App\OrderModel;
 use App\ProductModel;
-use App\SellerModel;
+use App\Repositories\ProductEloquentRepository;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -13,28 +13,22 @@ use Illuminate\Support\Facades\Redirect;
 class SellerController extends Controller
 {
 
-    public function __construct()
+    protected ProductEloquentRepository $productRepository;
+
+    public function __construct(ProductEloquentRepository $productRepository)
     {
         $this->middleware('auth');
 
+        $this->productRepository = $productRepository;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
+    public function index()
     {
-        $seller = User::find(\Auth::id())
-            ->seller()
-            ->first();
+
+        $seller_id = \Auth::user()->seller->id;
 
         return view('seller.list', [
-            'products' => SellerModel::find($seller->id)
-                ->product()
-                ->orderBy('created_at', 'desc')
-                ->paginate(10),
+            'products' => $this->productRepository->findAllBySellerId($seller_id)
         ]);
     }
 
@@ -52,36 +46,27 @@ class SellerController extends Controller
             'image_url' => 'required',
         ]);
 
-        $data = [
-            'seller_id' => SellerModel::firstWhere('user_id', \Auth::id())->id,
-            'title' => $request->title,
-            'price' => $request->price,
-            'description' => $request->description,
-            'image_url' => $request->image_url,
-        ];
+        $product = $this->productRepository->add($request->all());
 
-        ProductModel::create($data);
+        $this->productRepository->save($product);
+
+//        ProductModel::create([
+//            'seller_id' => \Auth::user()->seller->id,
+//            'title' => $request->title,
+//            'price' => $request->price,
+//            'description' => $request->description,
+//            'image_url' => $request->image_url,
+//        ]);
 
         return Redirect::to('seller')
-            ->with('success', 'ProductModel created successfully!');
-    }
-
-    public function show($id)
-    {
-        //
+            ->with('success', 'Product created successfully!');
     }
 
     public function edit($id)
     {
-        $data['product'] = ProductModel::firstWhere('id', $id);
+        $product = $this->productRepository->findById($id);
 
-        $seller_id = SellerModel::firstWhere('user_id', \Auth::id())->id;
-
-        if ($data['product']->seller_id != $seller_id) {
-            return \redirect('seller');
-        }
-
-        return view('seller.edit', $data);
+        return view('seller.edit', ['product' => $product]);
     }
 
     public function update(Request $request, $id)
@@ -93,28 +78,33 @@ class SellerController extends Controller
             'image_url' => 'required',
         ]);
 
-        $update = [
+        $product = $this->productRepository->findById($id);
+
+        $product->profile->changeProfile([
             'title' => $request->title,
             'price' => $request->price,
             'description' => $request->description,
-            'image_url' => $request->image_url,
-        ];
+            'image_url' => $request->image_url
+        ]);
 
-        ProductModel::where('id', $id)->update($update);
+        $this->productRepository->save($product);
 
         return Redirect::to('seller')
-            ->with('success', 'ProductModel updated successfully');
+            ->with('success', 'Product updated successfully');
     }
 
     public function destroy($id)
     {
-        SellerModel::firstWhere('user_id', \Auth::id())
-            ->product()
-            ->where('id', $id)
-            ->delete();
+        $product = $this->productRepository->findById($id);
 
-        return Redirect::to('seller')
-            ->with('success', 'ProductModel deleted successfully!');
+        if($product->canBeDeleted('some policy'))
+        {
+            $this->productRepository->delete($product);
+
+            return Redirect::to('seller')
+                ->with('success', 'Product deleted successfully!');
+        }
+        return Redirect::to('seller');
     }
 
     public function ordersForSeller()
@@ -123,7 +113,7 @@ class SellerController extends Controller
 
         OrderModel::where('seller_id', \Auth::user()->seller()->first()->id)
             ->get()
-            ->each(function ($order) use (&$orders){
+            ->each(function ($order) use (&$orders) {
 
                 $customer = User::find($order->customer_id)->first();
 
@@ -139,8 +129,6 @@ class SellerController extends Controller
 
                 $orders[$order->id]["status"] = $order->status;
             });
-
-        //dd($orders);
 
         return view('order.seller_list', [
             'orders' => $orders,

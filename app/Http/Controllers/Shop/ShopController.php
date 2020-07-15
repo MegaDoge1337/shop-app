@@ -2,79 +2,57 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\BasketModel;
-use App\ProductModel;
+use App\Http\Controllers\Controller;
+use App\Repositories\BasketProductRepositoryInterface;
+use App\Repositories\CustomerRepositoryInterface;
+use App\Repositories\ProductRepositoryInterface;
 use App\SellerModel;
 use App\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-    public function __construct()
+
+    protected ProductRepositoryInterface $productRepository;
+    protected BasketProductRepositoryInterface $basketProductRepository;
+    protected CustomerRepositoryInterface $customerRepository;
+
+    public function __construct(CustomerRepositoryInterface $customerRepository,
+                                ProductRepositoryInterface $productRepository,
+                                BasketProductRepositoryInterface $basketProductRepository)
     {
         $this->middleware('auth');
+
+        $this->customerRepository = $customerRepository;
+        $this->productRepository = $productRepository;
+        $this->basketProductRepository = $basketProductRepository;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        $shops = User::join('sellers', 'sellers.user_id', '=', 'users.id')
-            ->get()->all();
-
-        $data['shops'] = $shops;
-
-        return view('shop.list', $data);
+        return view('shop.list', [
+            'sellers' => User::join('sellers', 'sellers.user_id', '=', 'users.id')
+                ->select('sellers.id', 'name')
+                ->get()
+                ->all()
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id, Request $request)
+    public function show($id)
     {
         $seller = SellerModel::where('user_id', \Auth::id())->first();
 
-        $products = ProductModel::where('seller_id', $id)->orderBy('created_at','desc')->paginate(10);
+        $customer = $this->customerRepository->findById(\Auth::id());
 
-        $inBasket = [];
+        $products = $this->productRepository->findAllBySellerId($id);
 
-        foreach ($products as $product)
-        {
-            if(BasketModel::where('customer_id', \Auth::id())->where('product_id', $product->id)->first())
-            {
-                $inBasket[$product->id] = true;
-                continue;
-            }
-            $inBasket[$product->id] = false;
-        }
+        $userBasketProducts = $this->basketProductRepository->findAllByCustomerId($customer->id);
 
-        if($seller == null)
-        {
-            return view('shop.products',[
-                'seller' => SellerModel::find($id)->user()->first(),
-                'products' => $products,
-            ]);
-        }
-
-        if($seller->id != $id)
-        {
-
-            return view('shop.products',[
-                'seller' => SellerModel::find($id)->user()->first(),
-                'products' => $products,
-                'inBasket' => $inBasket,
-            ]);
-        }
-
-        return view('shop.myproducts',[
-            'products' => $products,
-            'warning' => $request->warning,
+        return view('shop.products', [
+            'seller' => $seller,
+            'customer' => $customer,
+            'userBasketProducts' => $userBasketProducts,
+            'products' => $products
         ]);
     }
 
@@ -82,27 +60,22 @@ class ShopController extends Controller
     {
         $seller = SellerModel::where('user_id', \Auth::id())->first();
 
-        $inBasket = BasketModel::where('customer_id', \Auth::id())
-            ->where('product_id', $product_id)
-            ->first();
+        $product = $this->productRepository->findById($product_id);
 
-        if($inBasket != null) $inBasket = true;
+        $inBasket = $this->basketProductRepository->findByProductId($product_id, \Auth::id());
 
-        if($seller == null || $seller->id != $seller_id)
-        {
-            return view('shop.single_product',[
-                'product' => ProductModel::find($product_id),
-                'your_product' => 0,
-                'warning' => '',
-                'in_basket' => $inBasket,
+        if ($seller->id == $seller_id) {
+            return view('shop.single_product', [
+                'product' => $product,
+                'your_product' => true,
+                'warning' => $request->warning
             ]);
         }
 
-        return view('shop.single_product',[
-            'product' => ProductModel::find($product_id),
-            'your_product' => 1,
-            'warning' => $request->warning ?? '',
-            'in_basket' => $inBasket,
+        return view('shop.single_product', [
+            'product' => $product,
+            'your_product' => false,
+            'in_basket' => $inBasket ?? false
         ]);
     }
 }

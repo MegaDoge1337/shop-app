@@ -6,7 +6,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">{{ $seller->name }} Products</div>
+                        @if(isset($seller))
+                            <div class="card-header">{{ $seller->name }} Products</div>
+                        @else
+                            <div class="card-header">My Products</div>
+                        @endif
                         <div class="card-body">
                             <table class="table table-bordered" id="laravel_crud">
                                 <thead>
@@ -23,23 +27,26 @@
                                 <tbody>
                                 @foreach($products as $product)
                                     <tr>
-                                        <td><a href="{{ route('shop.single', [$product->seller_id, $product->id]) }}">{{ $product->title }}</a></td>
-                                        <td>{{ $product->price }}</td>
-                                        <td>{{ $product->description }}</td>
-                                        <td><img src="{{ $product->image_url }}"></td>
-                                        <td>{{ date('Y-m-d', strtotime($product->created_at)) }}</td>
-                                        <td>{{ date('Y-m-d', strtotime($product->updated_at)) }}</td>
+                                        <td>
+                                            <a href="{{ route('shop.single', [$product->sellerId, $product->id]) }}">{{ $product->profile->title }}</a>
+                                        </td>
+                                        <td>{{ $product->profile->price }}</td>
+                                        <td>{{ $product->profile->description }}</td>
+                                        <td><img src="{{ $product->profile->imageUrl }}"></td>
+                                        <td>{{ date('Y-m-d', strtotime($product->createdAt)) }}</td>
+                                        <td>{{ date('Y-m-d', strtotime($product->updatedAt)) }}</td>
                                         <td>
                                             <form action="{{ route('basket.store')}}" method="post">
                                                 @csrf
                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="seller_id" value="{{ $product->seller_id }}">
+                                                <input type="hidden" name="seller_id"
+                                                       value="{{ $product->sellerId }}">
                                                 <button class="btn btn-primary" type="submit">
-                                                    @if($inBasket[$product->id])
-                                                        In Basket
-                                                    @else
-                                                        Add to Basket
-                                                    @endif
+                                                        @if(\App\Entities\BasketProductEntity::actualize($userBasketProducts, $product->id))
+                                                            In Basket
+                                                        @else
+                                                            Add to Basket
+                                                        @endif
                                                 </button>
                                             </form>
                                         </td>
@@ -49,7 +56,6 @@
                             </table>
                         </div>
                     </div>
-                    {!! $products->links() !!}
                 </div>
             </div>
         </div>

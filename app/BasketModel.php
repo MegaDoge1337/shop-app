@@ -9,48 +9,39 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property int $seller_id
- * @property mixed $products
+ * @property int $customer_id
+ * @property int $product_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\CustomerModel $customer
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereCustomerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereProducts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereSellerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property int $customer_id
- * @property int $product_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereCustomerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereProductId($value)
- * @property-read \App\ProductModel $product
- * @property-read \App\SellerModel $seller
- * @property-read \App\User $user
+ * @property array $products
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\BasketModel whereProducts($value)
  */
 class BasketModel extends Model
 {
     protected $table = 'baskets';
 
     protected $fillable = [
-        'seller_id',
         'customer_id',
-        'product_id',
+        'products',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo('App\User', 'customer_id');
-    }
+    protected $casts = [
+        'products' => 'array',
+    ];
 
-    public function seller()
+    public function customer()
     {
-        return $this->belongsTo('App\SellerModel', 'seller_id');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo('App\ProductModel');
+        return $this->belongsTo('App\CustomerModel', 'customer_id');
     }
 }

@@ -16,7 +16,7 @@
                                     <div class="form-group">
                                         <strong>Title</strong>
                                         <input type="text" name="title" class="form-control" placeholder="Enter Title"
-                                               value="{{ $product->title }}">
+                                               value="{{ $product->profile->title }}">
                                         <span class="text-danger">{{ $errors->first('title') }}</span>
                                     </div>
                                 </div>
@@ -24,7 +24,7 @@
                                     <div class="form-group">
                                         <strong>Product Code</strong>
                                         <input type="text" name="price" class="form-control" placeholder="Enter Price"
-                                               value="{{ $product->price }}">
+                                               value="{{ $product->profile->price }}">
                                         <span class="text-danger">{{ $errors->first('price') }}</span>
                                     </div>
                                 </div>
@@ -32,7 +32,7 @@
                                     <div class="form-group">
                                         <strong>Description</strong>
                                         <input type="text" name="description" class="form-control"
-                                               placeholder="Enter Description" value="{{ $product->description }}">
+                                               placeholder="Enter Description" value="{{ $product->profile->description }}">
                                         <span class="text-danger">{{ $errors->first('description') }}</span>
                                     </div>
                                 </div>
@@ -40,7 +40,7 @@
                                     <div class="form-group">
                                         <strong>Image URL</strong>
                                         <input type="text" name="image_url" class="form-control"
-                                               placeholder="Enter Image URL" value="{{ $product->image_url }}">
+                                               placeholder="Enter Image URL" value="{{ $product->profile->imageUrl }}">
                                         <span class="text-danger">{{ $errors->first('image_url') }}</span>
                                     </div>
                                 </div>

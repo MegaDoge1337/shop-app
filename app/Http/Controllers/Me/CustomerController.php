@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Me;
 
-use App\OrderModel;
-use App\ProductModel;
-use App\Repositories\CustomerRepository;
-use App\SellerModel;
+use App\CustomerModel;
+use App\Repositories\CustomerRepositoryInterface;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,9 +12,10 @@ use App\Http\Controllers\Controller;
 class CustomerController extends Controller
 {
 
-    protected CustomerRepository $customerRepository;
+    protected CustomerRepositoryInterface $customerRepository;
 
-    public function __construct(CustomerRepository $customerRepository)
+
+    public function __construct(CustomerRepositoryInterface $customerRepository)
     {
         $this->middleware('auth');
 
@@ -25,8 +24,10 @@ class CustomerController extends Controller
 
     public function index()
     {
+        $customer = $this->customerRepository->findById(\Auth::id());
+
         return view('me.contacts.index', [
-            'customer' => $this->customerRepository->makeEntity()
+            'customer' => $customer
         ]);
     }
 
@@ -42,9 +43,11 @@ class CustomerController extends Controller
                 ->withInput();
         }
 
-        $customer = $this->customerRepository->makeEntity();
+        $customer = $this->customerRepository->findById(\Auth::id());
 
-        $customer->address = $request->address;
+//        if($this->customerPolicy->allowUpdate($customer)) throw new \Exception();
+
+        $customer->changeAddress($request->address);
 
         $this->customerRepository->save($customer);
 
@@ -61,7 +64,7 @@ class CustomerController extends Controller
             ->get()
             ->each(function ($order) use (&$orders){
 
-                $seller = SellerModel::find($order->seller_id)->user()->first();
+                $seller = CustomerModel::find($order->seller_id)->user()->first();
 
                 $orders[$order->id]["seller"] = $seller->name;
 

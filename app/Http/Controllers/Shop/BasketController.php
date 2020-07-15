@@ -2,28 +2,30 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\BasketModel;
+use App\BasketProductModel;
 use App\Http\Controllers\Controller;
 use App\ProductModel;
+use App\Repositories\BasketProductRepositoryInterface;
 use App\SellerModel;
 use App\Services\TotalSumCalculator;
-use App\User;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller
 {
     protected TotalSumCalculator $sumCalculator;
+    protected BasketProductRepositoryInterface $basketProductRepository;
 
-    public function __construct(TotalSumCalculator $sumCalculator)
+    public function __construct(TotalSumCalculator $sumCalculator,
+                                BasketProductRepositoryInterface $basketProductRepository)
     {
         $this->middleware('auth');
 
         $this->sumCalculator = $sumCalculator;
+        $this->basketProductRepository = $basketProductRepository;
     }
 
     public function index(TotalSumCalculator $sumCalculator)
     {
-
         $baskets = [];
 
         \Auth::user()
@@ -38,8 +40,7 @@ class BasketController extends Controller
 
             });
 
-        foreach ($baskets as $shopTitle => $basket)
-        {
+        foreach ($baskets as $shopTitle => $basket) {
             $baskets[$shopTitle]['sum'] = $sumCalculator->handler($basket);
         }
 
@@ -59,7 +60,7 @@ class BasketController extends Controller
             'product_id' => $product->id,
         ];
 
-        BasketModel::create($data);
+        BasketProductModel::create($data);
 
         return \redirect()->back();
     }

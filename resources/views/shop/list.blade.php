@@ -8,9 +8,9 @@
                     <div class="card-header">Shops List</div>
                     <div class="card-body">
                         <div class="list-group">
-                            @foreach($shops as $shop)
-                                <a href="{{ route('shop.show', $shop->id) }}"
-                                   class="list-group-item list-group-item-action">{{ $shop->name }}</a>
+                            @foreach($sellers as $seller)
+                                <a href="{{ route('shop.show', $seller->id) }}"
+                                   class="list-group-item list-group-item-action">{{ $seller->name }}</a>
                             @endforeach
                         </div>
                     </div>

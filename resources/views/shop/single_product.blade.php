@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="row">
                 <div class="col-12">
-                    @if($warning)
+                    @if(isset($warning))
                         <div class="alert alert-warning" role="alert">
                             {{ $warning }}
                         </div>
@@ -19,15 +19,15 @@
                                 <li><b>Description: </b>{{ $product->description }}</li>
                                 <li><b>Image:</b></li>
                             </ul>
-                            <img src="{{ $product->image_url }}"><br><br>
+                            <img src="{{ $product->imageUrl }}"><br><br>
 
                             @if($your_product)
-                                <form action="{{ route('shop.single', [$product->seller_id, $product->id])  }}"
+                                <form action="{{ route('shop.single', [$product->sellerId, $product->id])  }}"
                                       method="get">
                                     <input type="hidden" name="warning"
                                            value="You can't add to basket your own product!">
                                     <button class="btn btn-primary" type="submit">Add to
-                                        cart
+                                        basket
                                     </button>
                                 </form>
                             @else
@@ -36,7 +36,7 @@
                                     <input type="hidden" name="product_id"
                                            value="{{ $product->id }}">
                                     <input type="hidden" name="seller_id"
-                                           value="{{ $product->seller_id }}">
+                                           value="{{ $product->sellerId }}">
                                     <button class="btn btn-primary" type="submit">
                                         @if($in_basket)
                                             In Basket
