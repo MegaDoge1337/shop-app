@@ -40,21 +40,21 @@ class SellerModel extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
-    public function product()
+    public function products()
     {
-        return $this->hasMany('App\ProductModel', 'seller_id');
+        return $this->hasMany(ProductModel::class, 'seller_id');
     }
 
-    public function order()
+    public function orders()
     {
-        return $this->hasMany('App\OrderModel', 'seller_id');
+        return $this->hasMany(OrderModel::class, 'seller_id');
     }
 
-    public function basket()
+    public function baskets()
     {
-        return $this->hasMany('App\BasketProductModel', 'seller_id');
+        return $this->hasMany(BasketModel::class, 'seller_id');
     }
 }

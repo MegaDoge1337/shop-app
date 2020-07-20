@@ -10,25 +10,21 @@
                         <div class="card-body">
                             <table class="table table-bordered" id="laravel_crud">
                                 <tbody>
-                                @foreach($baskets as $shopTitle => $basket)
+                                @foreach($baskets as $basket)
                                     <tr>
                                         <td>
-                                            <h3>{{ $shopTitle }}</h3>
+                                            <h3>{{ $basket->seller->name }}</h3>
                                             <ul>
-                                                @foreach($basket as $key => $product)
-                                                    @if($key === "sum")
-                                                        <li><b>Total sum: {{ $product }}</b></li>
-                                                    @else
-                                                        <li>{{ $product->title }} (Price: {{ $product->price }})</li>
-                                                    @endif
+                                                @foreach($basket->products as $product)
+                                                    <li>{{ $product->profile->title }} (Price: {{ $product->price }})</li>
                                                 @endforeach
+                                                <li><b>Total sum:</b> {{ $basket->pricesTotalSum($totalSumCalculator) }}</li>
                                             </ul>
                                         </td>
                                         <td align="center">
                                             <form action="{{ route('order.make') }}" method="post">
                                                 @csrf
-                                                <input type="hidden" name="customer_id" value="{{ $customer }}">
-                                                <input type="hidden" name="shop_title" value="{{ $shopTitle }}">
+                                                <input type="hidden" name="basket_id" value="{{ $basket->id }}">
                                                 <button class="btn btn-primary" type="submit">Make order</button>
                                             </form>
                                         </td>

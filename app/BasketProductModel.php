@@ -34,17 +34,11 @@ class BasketProductModel extends Model
     protected $table = 'basket_products';
 
     protected $fillable = [
-        'seller_id',
-        'product_id',
+        'product_id'
     ];
 
-    public function seller()
+    public function products()
     {
-        return $this->belongsTo('App\SellerModel', 'seller_id');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo('App\ProductModel');
+        return $this->belongsTo(ProductModel::class);
     }
 }

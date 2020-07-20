@@ -2,71 +2,99 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\BasketProductModel;
+use App\Entities\BasketEntity;
+use App\Entities\BasketProductEntity;
 use App\Http\Controllers\Controller;
-use App\ProductModel;
 use App\Repositories\BasketProductRepositoryInterface;
-use App\SellerModel;
+use App\Repositories\BasketRepositoryInterface;
+use App\Repositories\CustomerRepositoryInterface;
+use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\SellerRepositoryInterface;
 use App\Services\TotalSumCalculator;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller
 {
-    protected TotalSumCalculator $sumCalculator;
+    protected TotalSumCalculator $totalSumCalculator;
     protected BasketProductRepositoryInterface $basketProductRepository;
+    protected BasketRepositoryInterface $basketRepository;
+    protected ProductRepositoryInterface $productRepository;
+    protected CustomerRepositoryInterface $customerRepository;
+    protected SellerRepositoryInterface $sellerRepository;
 
-    public function __construct(TotalSumCalculator $sumCalculator,
-                                BasketProductRepositoryInterface $basketProductRepository)
+    public function __construct(TotalSumCalculator $totalSumCalculator,
+                                BasketProductRepositoryInterface $basketProductRepository,
+                                BasketRepositoryInterface $basketRepository,
+                                ProductRepositoryInterface $productRepository,
+                                CustomerRepositoryInterface $customerRepository,
+                                SellerRepositoryInterface $sellerRepository)
     {
         $this->middleware('auth');
 
-        $this->sumCalculator = $sumCalculator;
+        $this->totalSumCalculator = $totalSumCalculator;
         $this->basketProductRepository = $basketProductRepository;
+        $this->basketRepository = $basketRepository;
+        $this->productRepository = $productRepository;
+        $this->customerRepository = $customerRepository;
+        $this->sellerRepository = $sellerRepository;
     }
 
-    public function index(TotalSumCalculator $sumCalculator)
+    public function index()
     {
-        $baskets = [];
+        $customer = $this->customerRepository->findById(\Auth::id());
 
-        \Auth::user()
-            ->basket()
-            ->each(function ($basket) use (&$baskets) {
+        $baskets = $this->basketRepository->findCustomerBaskets($customer);
 
-                $product = $basket->product()->first();
+        foreach ($baskets as $basket)
+        {
+            $basketProducts = $this->basketProductRepository->findProductsByBasket($basket);
 
-                $shopTitle = SellerModel::find($product->seller_id)->user()->first()->name;
+            $products = $this->productRepository->findByBasketProducts($basketProducts);
 
-                $baskets[$shopTitle][] = $product;
-
-            });
-
-        foreach ($baskets as $shopTitle => $basket) {
-            $baskets[$shopTitle]['sum'] = $sumCalculator->handler($basket);
+            $basket->changeProductsList($products);
         }
 
         return view('basket.list', [
-            'baskets' => $baskets,
-            'customer' => \Auth::id(),
+            'baskets' => collect($baskets),
+            'totalSumCalculator' => $this->totalSumCalculator
         ]);
     }
 
     public function store(Request $request)
     {
-        $product = ProductModel::find($request->product_id);
+        $product = $this->productRepository->findById($request->product_id);
 
-        $data = [
-            'seller_id' => $request->seller_id,
-            'customer_id' => \Auth::id(),
-            'product_id' => $product->id,
-        ];
+        $customer = $this->customerRepository->findById(\Auth::id());
 
-        BasketProductModel::create($data);
+        $seller = $this->sellerRepository->findById($product->sellerId);
+
+        $basketProduct = BasketProductEntity::create($product->id);
+
+        $basketProduct = $this->basketProductRepository->add($basketProduct);
+
+        if($basketProduct == null)
+        {
+            return \redirect()->back()->with('error', 'Something went wrong');
+        }
+
+        $basket = BasketEntity::create($seller, $customer, [$basketProduct->id]);
+
+        $newBasket = $this->basketRepository->add($basket);
+
+        if($newBasket == null)
+        {
+            $this->basketRepository->save($basket);
+        }
 
         return \redirect()->back();
     }
 
     public function destroy($id)
     {
-        //
+        $basket = $this->basketRepository->findById($id);
+
+        $this->basketProductRepository->delete($basket);
+
+        $this->basketRepository->delete($basket);
     }
 }

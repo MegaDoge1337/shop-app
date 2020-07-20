@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Entities\CustomerEntity;
+use App\Entities\SellerEntity;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -49,20 +51,38 @@ class OrderModel extends Model
         'customer_address',
         'products',
         'total_sum',
-        'status',
+        'status'
     ];
 
     protected $casts = [
-        'products' => 'array',
+        'products' => 'array'
     ];
 
     public function seller()
     {
-        return $this->belongsTo('App\SellerModel');
+        return $this->belongsTo(SellerModel::class);
     }
 
-    public function user()
+    public function customer()
     {
-        return $this->belongsTo('App\User', 'customer_id');
+        return $this->belongsTo(CustomerModel::class);
+    }
+
+    public function findSeller()
+    {
+        return new SellerEntity(
+            $this->seller->id,
+            $this->seller->user->name,
+            $this->seller->address
+        );
+    }
+
+    public function findCustomer()
+    {
+        return new CustomerEntity(
+            $this->customer->id,
+            $this->customer->user->name,
+            $this->customer->address
+        );
     }
 }

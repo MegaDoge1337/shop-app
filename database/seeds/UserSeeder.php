@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
 
         factory(App\User::class, 5)->create()->each($sellersCallback)->each(
             function ($user) {
-                $user->seller->product()->saveMany(factory(App\ProductModel::class, 5)->make());
+                $user->seller->products()->saveMany(factory(App\ProductModel::class, 5)->make());
             }
         );
     }

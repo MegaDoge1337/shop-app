@@ -4,11 +4,11 @@ namespace App\Entities;
 
 class SellerEntity
 {
-    public int $id;
+    public ?int $id;
     public string $name;
     public string $address;
 
-    public function __construct(int $id, string $name, string $address)
+    public function __construct(?int $id, string $name, string $address)
     {
         $this->id = $id;
         $this->name = $name;

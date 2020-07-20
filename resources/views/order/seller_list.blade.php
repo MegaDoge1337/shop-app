@@ -9,36 +9,29 @@
                         <div class="card-header">Orders List</div>
                         <div class="card-body">
                             <div class="list-group">
-                                @foreach($orders as $order_id => $order)
+                                @foreach($orders as $order)
                                     <div class="card border-info mb-3">
-                                        <h5 class="card-header">Order No{{ $order_id }}</h5>
+                                        <h5 class="card-header">Order No{{ $order->id }}</h5>
                                         <div class="card-body">
-                                            @foreach($order as $field => $value)
-                                                @if($field == "customer")
-                                                    <h3><b>{{ $value }}</b></h3><br>
-                                                @elseif($field == "address")
-                                                    <b>Address:</b> {{ $value }}<br>
-                                                @elseif($field == "date")
-                                                    <b>Date:</b> {{ $value }}<br>
-                                                @elseif($field == "sum")
-                                                    <b>Total sum:</b> {{ $value }}<br>
-                                                @elseif($field == "products")
-                                                    <ul>
-                                                    @foreach($value as $products)
-                                                            <li><b>{{ $products["title"] }}</b> | <b>Price:</b> {{ $products["price"] }}</li>
-                                                    @endforeach
-                                                    </ul>
-                                                @endif
-                                            @endforeach
-                                            @if($order["status"] == 1)
+                                            <h3><b>{{ $order->customer->name }}</b></h3><br>
+                                            <b>Address:</b> {{ $order->customerAddress }}<br>
+                                            <b>Date:</b> {{ $order->createdAt }} <br>
+                                            <b>Total sum:</b> {{ $order->totalSum }}<br>
+                                            <ul>
+                                                @foreach($order->products as $product)
+                                                    <li><b>{{ $product['profile']['title'] }}</b> |
+                                                        <b>Price:</b> {{ $product["price"] }}</li>
+                                                @endforeach
+                                            </ul>
+                                            @if($order->status == 1)
                                                 <div class="alert alert-primary" role="alert">
                                                     <b>Status: In processing</b>
                                                 </div>
-                                            @elseif($order["status"] == 2)
+                                            @elseif($order->status == 2)
                                                 <div class="alert alert-warning" role="alert">
                                                     <b>Status: In transit</b>
                                                 </div>
-                                            @elseif($order["status"] == 3)
+                                            @elseif($order->status == 3)
                                                 <div class="alert alert-success" role="alert">
                                                     <b>Status: Delivered</b>
                                                 </div>
@@ -54,8 +47,9 @@
                                                             In transit</label>
                                                         <br><label><input type="radio" name="status" value="3">
                                                             Delivered</label>
-                                                        <input type="hidden" name="order_id" value="{{ $order_id }}">
-                                                        <br><button type="submit" class="btn btn-primary">Submit</button>
+                                                        <input type="hidden" name="order_id" value="{{ $order->id }}">
+                                                        <br>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
                                                     </div>
                                                 </div>
                                             </form>

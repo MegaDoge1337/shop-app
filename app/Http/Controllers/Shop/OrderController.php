@@ -2,83 +2,99 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\BasketProductModel;
-use App\OrderModel;
-use App\ProductModel;
+use App\Entities\OrderEntity;
 use App\Http\Controllers\Controller;
-use App\SellerModel;
+use App\Policies\OrderPolicy;
+use App\Repositories\BasketProductRepositoryInterface;
+use App\Repositories\BasketRepositoryInterface;
+use App\Repositories\CustomerRepositoryInterface;
+use App\Repositories\OrderRepositoryInterface;
+use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\SellerRepositoryInterface;
 use App\Services\TotalSumCalculator;
-use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class OrderController extends Controller
 {
-    protected TotalSumCalculator $sumCalculator;
+    protected TotalSumCalculator $totalSumCalculator;
+    protected SellerRepositoryInterface $sellerRepository;
+    protected CustomerRepositoryInterface $customerRepository;
+    protected BasketProductRepositoryInterface $basketProductRepository;
+    protected BasketRepositoryInterface $basketRepository;
+    protected ProductRepositoryInterface $productRepository;
+    protected OrderRepositoryInterface $orderRepository;
+    protected OrderPolicy $orderPolicy;
 
-    public function __construct(TotalSumCalculator $sumCalculator)
+    public function __construct(TotalSumCalculator $sumCalculator,
+                                SellerRepositoryInterface $sellerRepository,
+                                CustomerRepositoryInterface $customerRepository,
+                                BasketProductRepositoryInterface $basketProductRepository,
+                                BasketRepositoryInterface $basketRepository,
+                                ProductRepositoryInterface $productRepository,
+                                OrderRepositoryInterface $orderRepository,
+                                OrderPolicy $orderPolicy)
     {
         $this->middleware('auth');
 
-        $this->sumCalculator = $sumCalculator;
+        $this->totalSumCalculator = $sumCalculator;
+        $this->sellerRepository = $sellerRepository;
+        $this->customerRepository = $customerRepository;
+        $this->basketRepository = $basketRepository;
+        $this->basketProductRepository = $basketProductRepository;
+        $this->productRepository = $productRepository;
+        $this->orderRepository = $orderRepository;
+        $this->orderPolicy = $orderPolicy;
     }
 
     public function make(Request $request)
     {
         return view('order.make', [
-            'seller_id' => User::where('name', $request->shop_title)->first()->id,
-            'address' => User::find(\Auth::id())->address,
-            ]);
+            'basket_id' => $request->basket_id,
+            'address' => $this->customerRepository->findById(\Auth::id())->address,
+        ]);
     }
 
 
-    public function store(Request $request, TotalSumCalculator $sumCalculator)
+    public function store(Request $request)
     {
 
-        $data = [
-            'seller_id' => $request->seller_id,
-            'customer_id' => \Auth::id(),
-            'customer_address' => $request->address,
-            'products' => '',
-            'total_sum' => '',
-            'status' => '1',
-        ];
+        $basket = $this->basketRepository->findById($request->basket_id);
 
-        $basket = [];
+        $basketProducts = $this->basketProductRepository->findProductsByBasket($basket);
 
-        \Auth::user()
-            ->basket()
-            ->where('seller_id', $request->seller_id)
-            ->each(function ($baskets) use (&$basket) {
+        $products = $this->productRepository->findByBasketProducts($basketProducts);
 
-                $product = $baskets->product()->first();
+        $basket->changeProductsList($products);
 
-                $basket[] = $product;
+        $order = OrderEntity::create($basket->seller,
+            $basket->customer,
+            $request->address,
+            $basket->products,
+            $basket->pricesTotalSum($this->totalSumCalculator),
+            1);
 
-            });
+        $basket = $this->basketRepository->findById($basket->id);
 
-        $data['total_sum'] = $sumCalculator->handler($basket);
+        $this->orderRepository->add($order);
 
-        $order = OrderModel::find(OrderModel::create($data)->id);
+        $this->basketProductRepository->delete($basket);
 
-        $order->products = $basket;
+        $this->basketRepository->delete($basket);
 
-        $order->save();
-
-        BasketProductModel::where('seller_id', $data['seller_id'])
-            ->where('customer_id', $data['customer_id'])
-            ->delete();
-
-        return redirect('/customer/orders');
+        return \Redirect::route('customer.orders');
     }
 
     public function changeStatus(Request $request)
     {
-        $order = OrderModel::find($request->order_id);
+        $order = $this->orderRepository->findById($request->order_id);
 
-        $order->status = $request->status;
+        if(!$this->orderPolicy->allowUpdate(\Auth::user(), $order))  return Redirect::route('error.403');
 
-        $order->save();
+        $order->changeStatus($request->status);
 
-        return redirect('/seller/orders');
+        $this->orderRepository->save($order);
+
+        return \Redirect::route('seller.orders');
     }
 }

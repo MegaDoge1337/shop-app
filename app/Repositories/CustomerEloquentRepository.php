@@ -13,16 +13,12 @@ class CustomerEloquentRepository implements CustomerRepositoryInterface
     {
         $user = User::findOrFail($id);
 
-        return new CustomerEntity($user->id, $user->name, $user->customer->address);
+        return new CustomerEntity($user->id, $user->name, $user->customer->address ?? '');
     }
 
     public function save(CustomerEntity $customerEntity)
     {
-        $update = [
-            'address' => $customerEntity->address
-        ];
-
-        CustomerModel::findOrNew($customerEntity->id)->update($update);
+        CustomerModel::findOrNew($customerEntity->id)->update($customerEntity->toArray());
 
         return CustomerModel::find($customerEntity->id);
     }

@@ -47,15 +47,20 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'phone_number', 'address', 'password',
+        'name',
+        'email',
+        'phone_number',
+        'address',
+        'password'
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token'
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime'
     ];
 
     public function customer()
@@ -65,16 +70,6 @@ class User extends Authenticatable
 
     public function seller()
     {
-        return $this->hasOne('App\SellerModel');
-    }
-
-    public function order()
-    {
-        return $this->hasMany('App\OrderModel', 'customer_id');
-    }
-
-    public function basket()
-    {
-        return $this->hasMany('App\BasketProductModel', 'customer_id');
+        return $this->hasOne(SellerModel::class);
     }
 }

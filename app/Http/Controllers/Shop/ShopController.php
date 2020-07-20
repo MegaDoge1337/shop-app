@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\BasketProductRepositoryInterface;
+use App\Repositories\BasketRepositoryInterface;
 use App\Repositories\CustomerRepositoryInterface;
 use App\Repositories\ProductRepositoryInterface;
-use App\SellerModel;
+use App\Repositories\SellerRepositoryInterface;
 use App\User;
-use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
@@ -16,16 +16,22 @@ class ShopController extends Controller
     protected ProductRepositoryInterface $productRepository;
     protected BasketProductRepositoryInterface $basketProductRepository;
     protected CustomerRepositoryInterface $customerRepository;
+    protected SellerRepositoryInterface $sellerRepository;
+    protected BasketRepositoryInterface $basketRepository;
 
     public function __construct(CustomerRepositoryInterface $customerRepository,
+                                SellerRepositoryInterface $sellerRepository,
                                 ProductRepositoryInterface $productRepository,
-                                BasketProductRepositoryInterface $basketProductRepository)
+                                BasketProductRepositoryInterface $basketProductRepository,
+                                BasketRepositoryInterface $basketRepository)
     {
         $this->middleware('auth');
 
         $this->customerRepository = $customerRepository;
+        $this->sellerRepository = $sellerRepository;
         $this->productRepository = $productRepository;
         $this->basketProductRepository = $basketProductRepository;
+        $this->basketRepository = $basketRepository;
     }
 
     public function index()
@@ -40,13 +46,15 @@ class ShopController extends Controller
 
     public function show($id)
     {
-        $seller = SellerModel::where('user_id', \Auth::id())->first();
+        $seller = $this->sellerRepository->findById($id);
 
         $customer = $this->customerRepository->findById(\Auth::id());
 
         $products = $this->productRepository->findAllBySellerId($id);
 
-        $userBasketProducts = $this->basketProductRepository->findAllByCustomerId($customer->id);
+        $userBasket = $this->basketRepository->findCustomerBaskets($customer);
+
+        $userBasketProducts = $this->basketProductRepository->findProductsByBaskets($userBasket);
 
         return view('shop.products', [
             'seller' => $seller,
@@ -56,26 +64,22 @@ class ShopController extends Controller
         ]);
     }
 
-    public function singleProduct($seller_id, $product_id, Request $request)
+    public function singleProduct($seller_id, $product_id)
     {
-        $seller = SellerModel::where('user_id', \Auth::id())->first();
+        $seller = $this->sellerRepository->findById($seller_id);
+
+        $customer = $this->customerRepository->findById(\Auth::id());
 
         $product = $this->productRepository->findById($product_id);
 
-        $inBasket = $this->basketProductRepository->findByProductId($product_id, \Auth::id());
+        $userBasket = $this->basketRepository->findCustomerBaskets($customer);
 
-        if ($seller->id == $seller_id) {
-            return view('shop.single_product', [
-                'product' => $product,
-                'your_product' => true,
-                'warning' => $request->warning
-            ]);
-        }
+        $userBasketProduct = $this->basketProductRepository->findProductInBaskets($userBasket, $product_id);
 
         return view('shop.single_product', [
+            'seller' => $seller,
             'product' => $product,
-            'your_product' => false,
-            'in_basket' => $inBasket ?? false
+            'userBasketProducts' => [$userBasketProduct]
         ]);
     }
 }

@@ -18,6 +18,7 @@ class CreateBasketsTable extends Migration
             $table->bigInteger('seller_id')->index();
             $table->bigInteger('customer_id')->index();
             $table->json('products');
+            $table->timestamps();
         });
     }
 

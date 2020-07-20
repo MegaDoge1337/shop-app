@@ -6,28 +6,35 @@ use App\Entities\Profiles\ProductProfile;
 
 class ProductEntity
 {
-    public int $id;
+    public ?int $id;
     public int $sellerId;
+    public float $price;
     public ProductProfile $profile;
-    public string $createdAt;
-    public string $updatedAt;
 
-    public function __construct(int $id,
-                                int $sellerId,
-                                ProductProfile $profile,
-                                string $createdAt,
-                                string $updatedAt)
+    public function __construct(?int $id, int $sellerId, float $price, ProductProfile $profile)
     {
         $this->id = $id;
         $this->sellerId = $sellerId;
+        $this->price = $price;
         $this->profile = $profile;
-        $this->createdAt = $createdAt;
-        $this->updatedAt = $updatedAt;
     }
 
-    public function changeProfile(array $data)
+    public static function create(int $sellerId, float $price, ProductProfile $profile)
     {
-        $this->profile->changeProfile($data);
+        return new self(null, $sellerId, $price, $profile);
+    }
+
+    public function changePrice(float $price)
+    {
+        if($price)
+        {
+            $this->price = $price;
+        }
+    }
+
+    public function changeProfile(ProductProfile $profile)
+    {
+        $this->profile = $profile;
     }
 
     public function canBeDeleted($policy)
@@ -36,14 +43,15 @@ class ProductEntity
         return null;
     }
 
-    public static function create(array $data)
+    public function toArray()
     {
-        $profile = new ProductProfile($data['title'], $data['price'], $data['description'], $data['image_url']);
-
-        return new self(0,
-            $data['seller_id'],
-            $profile, // ProductProfile
-            'product:createdAt',
-            'product:updatedAt');
+        return [
+            'seller_id' => $this->sellerId,
+            'title' => $this->profile->title,
+            'price' => $this->price,
+            'description' => $this->profile->description,
+            'image_url' => $this->profile->imageUrl
+        ];
     }
+
 }

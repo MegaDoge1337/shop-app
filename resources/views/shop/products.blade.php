@@ -6,11 +6,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        @if(isset($seller))
-                            <div class="card-header">{{ $seller->name }} Products</div>
-                        @else
-                            <div class="card-header">My Products</div>
-                        @endif
+                        <div class="card-header">{{ $seller->name }} Products</div>
                         <div class="card-body">
                             <table class="table table-bordered" id="laravel_crud">
                                 <thead>
@@ -19,8 +15,6 @@
                                     <th>Price</th>
                                     <th>Description</th>
                                     <th>Image</th>
-                                    <th>Created at</th>
-                                    <th>Updated at</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -30,11 +24,9 @@
                                         <td>
                                             <a href="{{ route('shop.single', [$product->sellerId, $product->id]) }}">{{ $product->profile->title }}</a>
                                         </td>
-                                        <td>{{ $product->profile->price }}</td>
+                                        <td>{{ $product->price }}</td>
                                         <td>{{ $product->profile->description }}</td>
                                         <td><img src="{{ $product->profile->imageUrl }}"></td>
-                                        <td>{{ date('Y-m-d', strtotime($product->createdAt)) }}</td>
-                                        <td>{{ date('Y-m-d', strtotime($product->updatedAt)) }}</td>
                                         <td>
                                             <form action="{{ route('basket.store')}}" method="post">
                                                 @csrf

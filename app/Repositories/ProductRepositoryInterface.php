@@ -10,7 +10,9 @@ interface ProductRepositoryInterface
 
     public function findById(int $id);
 
-    public function add(array $data);
+    public function findByBasketProducts(array $basketProducts);
+
+    public function add(ProductEntity $productEntity);
 
     public function save(ProductEntity $productEntity);
 

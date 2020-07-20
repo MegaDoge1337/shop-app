@@ -4,13 +4,13 @@ namespace App\Services;
 
 class TotalSumCalculator {
 
-    public function handler(array $collections)
+    public function productPricesSum(array $products)
     {
         $sum = 0.0;
 
-        foreach ($collections as $collection)
+        foreach ($products as $product)
         {
-            $sum += $collection->price;
+            $sum += $product->price;
         }
 
         return $sum;

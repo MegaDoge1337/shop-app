@@ -3,46 +3,76 @@
 namespace App\Repositories;
 
 use App\BasketProductModel;
+use App\Entities\BasketEntity;
 use App\Entities\BasketProductEntity;
 
 class BasketProductEloquentRepository implements BasketProductRepositoryInterface
 {
-    public function findByProductId(int $productId, int $customerId)
+    public function findProductsByBaskets(array $baskets)
     {
-        $basketProduct = BasketProductModel::where('product_id', $productId)
-            ->where('customer_id', $customerId)
-            ->first();
+        $productsList = [];
 
-        if ($basketProduct != null) {
-            return new BasketProductEntity(
-                $basketProduct->id,
-                $basketProduct->seller_id,
-                $basketProduct->customer_id,
-                $basketProduct->product_id,
-                $basketProduct->created_at,
-                $basketProduct->updated_at);
+        foreach ($baskets as $basket) {
+            foreach ($basket->products as $basketProductId) {
+                $basketProduct = BasketProductModel::find($basketProductId);
+
+                $productsList[] = new BasketProductEntity($basketProduct->id, $basketProduct->product_id);
+            }
+        }
+
+        return $productsList;
+    }
+
+    public function findProductsByBasket(BasketEntity $basket)
+    {
+        $products = [];
+
+        foreach ($basket->products as $basketProductId) {
+            $basketProduct = BasketProductModel::find($basketProductId);
+
+            $products[] = new BasketProductEntity($basketProduct->id, $basketProduct->product_id);
+        }
+
+        return $products;
+
+    }
+
+    public function findProductInBaskets(array $baskets, int $productId)
+    {
+
+        foreach ($baskets as $basket) {
+            foreach ($basket->products as $basketProductId) {
+                $basketProduct = BasketProductModel::find($basketProductId);
+
+                if ($basketProduct->product_id == $productId) return new BasketProductEntity($basketProduct->id, $basket->product_id);
+            }
+        }
+        return null;
+    }
+
+    public function add(BasketProductEntity $basketProductEntity)
+    {
+        if (!BasketProductModel::find($basketProductEntity->id)) {
+            return BasketProductModel::create($basketProductEntity->toArray());
         }
 
         return null;
     }
 
-    public function findAllByCustomerId(int $customerId)
+    public function save(BasketProductEntity $basketProductEntity)
     {
-        $productsList = [];
+        $basketProduct = BasketProductModel::findOrNew($basketProductEntity->id)->fill($basketProductEntity->toArray());
 
-        $basketProducts = BasketProductModel::where('customer_id', $customerId)->get();
+        $basketProduct->save();
 
-        foreach ($basketProducts as $basketProduct)
+        return $basketProduct;
+    }
+
+    public function delete(BasketEntity $basketEntity)
+    {
+        foreach ($basketEntity->products as $basketProduct)
         {
-            $productsList[] = new BasketProductEntity(
-                $basketProduct->id,
-                $basketProduct->seller_id,
-                $basketProduct->customer_id,
-                $basketProduct->product_id,
-                $basketProduct->created_at,
-                $basketProduct->updated_at);
+            BasketProductModel::findOrFail($basketProduct)->delete();
         }
-
-        return $productsList;
     }
 }

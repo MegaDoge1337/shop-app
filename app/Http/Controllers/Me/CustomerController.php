@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Me;
 
-use App\CustomerModel;
+use App\Http\Controllers\Controller;
 use App\Repositories\CustomerRepositoryInterface;
-use App\User;
+use App\Repositories\OrderRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 
 class CustomerController extends Controller
 {
 
     protected CustomerRepositoryInterface $customerRepository;
+    protected OrderRepositoryInterface $orderRepository;
 
-
-    public function __construct(CustomerRepositoryInterface $customerRepository)
+    public function __construct(CustomerRepositoryInterface $customerRepository, OrderRepositoryInterface $orderRepository)
     {
         $this->middleware('auth');
 
         $this->customerRepository = $customerRepository;
+        $this->orderRepository = $orderRepository;
     }
 
     public function index()
@@ -57,27 +57,7 @@ class CustomerController extends Controller
 
     public function ordersForCustomer()
     {
-        $orders = [];
-
-        User::find(\Auth::id())
-            ->order()
-            ->get()
-            ->each(function ($order) use (&$orders){
-
-                $seller = CustomerModel::find($order->seller_id)->user()->first();
-
-                $orders[$order->id]["seller"] = $seller->name;
-
-                $orders[$order->id]["products"] = collect($order->products);
-
-                $orders[$order->id]["address"] = $order->customer_address;
-
-                $orders[$order->id]["date"] = $order->created_at;
-
-                $orders[$order->id]["sum"] = $order->total_sum;
-
-                $orders[$order->id]["status"] = $order->status;
-            });
+        $orders = $this->orderRepository->findByCustomerId(\Auth::id());
 
         return view('order.customer_list', [
             'orders' => $orders,

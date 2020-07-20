@@ -42,16 +42,16 @@ class ProductModel extends Model
         'price',
         'description',
         'image_url',
-        'existence',
+        'existence'
     ];
 
     public function seller()
     {
-        return $this->belongsTo('App\SellerModel');
+        return $this->belongsTo(SellerModel::class);
     }
 
-    public function basket()
+    public function basketProducts()
     {
-        return $this->hasOne('App\ProductModel', 'product_id');
+        return $this->hasMany(BasketProductModel::class, 'product_id');
     }
 }

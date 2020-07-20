@@ -5,41 +5,45 @@ namespace App\Entities\Profiles;
 class ProductProfile
 {
     public string $title;
-    public float $price;
     public string $description;
     public string $imageUrl;
 
-    public function __construct(string $title, float $price, string $description, string $imageUrl)
+    public function __construct(string $title, string $description, string $imageUrl)
     {
         $this->title = $title;
-        $this->price = $price;
         $this->description = $description;
         $this->imageUrl = $imageUrl;
     }
 
-    public function changeProfile(array $data)
+    public function changeProfile(string $title, string $description, string $imageUrl)
     {
-        foreach ($data as $field => $value)
+        if($title)
         {
-            if($field == 'title')
-            {
-                $this->title = $value;
-            }
-
-            if($field == 'price')
-            {
-                $this->price = $value;
-            }
-
-            if($field == 'description')
-            {
-                $this->description = $value;
-            }
-
-            if($field == 'imageUrl')
-            {
-                $this->imageUrl = $value;
-            }
+            $this->title = $title;
         }
+
+        if($description)
+        {
+            $this->description = $description;
+        }
+
+        if($imageUrl)
+        {
+            $this->imageUrl = $imageUrl;
+        }
+    }
+
+    public static function create(string $title, string $description, string $imageUrl)
+    {
+        return new self($title, $description, $imageUrl);
+    }
+
+    public function toArray()
+    {
+        return [
+            'title' => $this->title,
+            'description' => $this->description,
+            'image_url' => $this->imageUrl,
+        ];
     }
 }

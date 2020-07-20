@@ -17,7 +17,7 @@
                                         <span class="text-danger">{{ $errors->first('address') }}</span>
                                     </div>
                                 </div>
-                                <input type="hidden" name="seller_id" value="{{ $seller_id }}">
+                                <input type="hidden" name="basket_id" value="{{ $basket_id }}">
                                 <div class="col-md-12">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>

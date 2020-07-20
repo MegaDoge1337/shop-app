@@ -24,7 +24,7 @@
                                     <div class="form-group">
                                         <strong>Product Code</strong>
                                         <input type="text" name="price" class="form-control" placeholder="Enter Price"
-                                               value="{{ $product->profile->price }}">
+                                               value="{{ $product->price }}">
                                         <span class="text-danger">{{ $errors->first('price') }}</span>
                                     </div>
                                 </div>

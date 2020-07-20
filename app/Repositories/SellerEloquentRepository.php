@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Entities\SellerEntity;
 use App\User;
 
-class SellerRepository
+class SellerEloquentRepository implements SellerRepositoryInterface
 {
     public function findById($id)
     {

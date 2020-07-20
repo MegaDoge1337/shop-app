@@ -16,8 +16,6 @@
                                     <th>Price</th>
                                     <th>Description</th>
                                     <th>Image</th>
-                                    <th>Created at</th>
-                                    <th>Updated at</th>
                                     <td colspan="2">
                                         <center><b>Action</b></center>
                                     </td>
@@ -27,11 +25,9 @@
                                 @foreach($products as $product)
                                     <tr>
                                         <td>{{ $product->profile->title }}</td>
-                                        <td>{{ $product->profile->price }}</td>
+                                        <td>{{ $product->price }}</td>
                                         <td>{{ $product->profile->description }}</td>
                                         <td><img src="{{ $product->profile->imageUrl }}"></td>
-                                        <td>{{ date('Y-m-d', strtotime($product->createdAt)) }}</td>
-                                        <td>{{ date('Y-m-d', strtotime($product->updatedAt)) }}</td>
                                         <td>
                                             <a href="{{ route('seller.edit',$product->id)}}" class="btn btn-primary">Edit</a>
                                         </td>

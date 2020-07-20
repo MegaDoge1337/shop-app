@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function () { return view('welcome'); });
 
 Auth::routes();
 
@@ -38,3 +36,5 @@ Route::get('/shop/{shop}/product/{product}', 'Shop\ShopController@singleProduct'
 
 Route::get('/basket', 'Shop\BasketController@index')->name('basket.index');
 Route::post('/basket', 'Shop\BasketController@store')->name('basket.store');
+
+Route::get('/errors/403', function () { return view('errors.403'); })->name('error.403');

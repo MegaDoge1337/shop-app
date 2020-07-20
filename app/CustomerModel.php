@@ -36,4 +36,14 @@ class CustomerModel extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(OrderModel::class, 'customer_id');
+    }
+
+    public function baskets()
+    {
+        return $this->hasMany(BasketModel::class, 'customer_id');
+    }
 }

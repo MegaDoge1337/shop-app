@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Entities\BasketEntity;
+use App\Entities\CustomerEntity;
+use App\Entities\SellerEntity;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -32,16 +35,40 @@ class BasketModel extends Model
     protected $table = 'baskets';
 
     protected $fillable = [
+        'seller_id',
         'customer_id',
-        'products',
+        'products'
     ];
 
     protected $casts = [
-        'products' => 'array',
+        'products' => 'array'
     ];
 
     public function customer()
     {
-        return $this->belongsTo('App\CustomerModel', 'customer_id');
+        return $this->belongsTo(CustomerModel::class, 'customer_id');
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(SellerModel::class);
+    }
+
+    public function findSeller()
+    {
+        return new SellerEntity(
+            $this->seller->id,
+            $this->seller->user->name,
+            $this->seller->address
+        );
+    }
+
+    public function findCustomer()
+    {
+        return new CustomerEntity(
+            $this->customer->id,
+            $this->customer->user->name,
+            $this->customer->address
+        );
     }
 }
