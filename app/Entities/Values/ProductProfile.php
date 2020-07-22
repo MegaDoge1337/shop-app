@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities\Profiles;
+namespace App\Entities\Values;
 
 class ProductProfile
 {

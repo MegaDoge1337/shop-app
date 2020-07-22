@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Shop;
 
+use App\BasketModel;
 use App\Entities\BasketEntity;
-use App\Entities\BasketProductEntity;
+use App\Entities\Values\BasketProduct;
 use App\Http\Controllers\Controller;
-use App\Repositories\BasketProductRepositoryInterface;
 use App\Repositories\BasketRepositoryInterface;
 use App\Repositories\CustomerRepositoryInterface;
 use App\Repositories\ProductRepositoryInterface;
@@ -16,14 +16,12 @@ use Illuminate\Http\Request;
 class BasketController extends Controller
 {
     protected TotalSumCalculator $totalSumCalculator;
-    protected BasketProductRepositoryInterface $basketProductRepository;
     protected BasketRepositoryInterface $basketRepository;
     protected ProductRepositoryInterface $productRepository;
     protected CustomerRepositoryInterface $customerRepository;
     protected SellerRepositoryInterface $sellerRepository;
 
     public function __construct(TotalSumCalculator $totalSumCalculator,
-                                BasketProductRepositoryInterface $basketProductRepository,
                                 BasketRepositoryInterface $basketRepository,
                                 ProductRepositoryInterface $productRepository,
                                 CustomerRepositoryInterface $customerRepository,
@@ -32,7 +30,6 @@ class BasketController extends Controller
         $this->middleware('auth');
 
         $this->totalSumCalculator = $totalSumCalculator;
-        $this->basketProductRepository = $basketProductRepository;
         $this->basketRepository = $basketRepository;
         $this->productRepository = $productRepository;
         $this->customerRepository = $customerRepository;
@@ -41,21 +38,16 @@ class BasketController extends Controller
 
     public function index()
     {
+        //dd(BasketModel::find(1)->products);
+
         $customer = $this->customerRepository->findById(\Auth::id());
 
         $baskets = $this->basketRepository->findCustomerBaskets($customer);
 
-        foreach ($baskets as $basket)
-        {
-            $basketProducts = $this->basketProductRepository->findProductsByBasket($basket);
-
-            $products = $this->productRepository->findByBasketProducts($basketProducts);
-
-            $basket->changeProductsList($products);
-        }
+        $syncBaskets = $this->basketRepository->syncBaskets($baskets);
 
         return view('basket.list', [
-            'baskets' => collect($baskets),
+            'baskets' => $syncBaskets,
             'totalSumCalculator' => $this->totalSumCalculator
         ]);
     }
@@ -68,22 +60,22 @@ class BasketController extends Controller
 
         $seller = $this->sellerRepository->findById($product->sellerId);
 
-        $basketProduct = BasketProductEntity::create($product->id);
+        $basketProduct = BasketProduct::create($product->id, $product->price, $product->profile->title);
 
-        $basketProduct = $this->basketProductRepository->add($basketProduct);
+        $basketProduct = $this->basketRepository->addBasketProduct($basketProduct);
 
         if($basketProduct == null)
         {
             return \redirect()->back()->with('error', 'Something went wrong');
         }
 
-        $basket = BasketEntity::create($seller, $customer, [$basketProduct->id]);
+        $basket = BasketEntity::create($seller, $customer, collect([$basketProduct]));
 
-        $newBasket = $this->basketRepository->add($basket);
+        $newBasket = $this->basketRepository->addBasket($basket);
 
         if($newBasket == null)
         {
-            $this->basketRepository->save($basket);
+            $this->basketRepository->saveBasket($basket);
         }
 
         return \redirect()->back();
@@ -91,10 +83,10 @@ class BasketController extends Controller
 
     public function destroy($id)
     {
-        $basket = $this->basketRepository->findById($id);
+        $basket = $this->basketRepository->findBasketById($id);
 
-        $this->basketProductRepository->delete($basket);
+        $this->basketRepository->deleteBasketProduct($basket);
 
-        $this->basketRepository->delete($basket);
+        $this->basketRepository->deleteBasket($basket);
     }
 }

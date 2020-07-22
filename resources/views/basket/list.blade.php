@@ -16,7 +16,13 @@
                                             <h3>{{ $basket->seller->name }}</h3>
                                             <ul>
                                                 @foreach($basket->products as $product)
-                                                    <li>{{ $product->profile->title }} (Price: {{ $product->price }})</li>
+                                                    @if($product->deleted)
+                                                        <li><div class="alert alert-danger" role="alert">
+                                                            {{ $product->title }}
+                                                        </div></li>
+                                                    @else
+                                                        <li>{{ $product->title }} (Price: {{ $product->price }})</li>
+                                                    @endif
                                                 @endforeach
                                                 <li><b>Total sum:</b> {{ $basket->pricesTotalSum($totalSumCalculator) }}</li>
                                             </ul>

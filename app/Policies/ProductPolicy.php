@@ -2,17 +2,22 @@
 
 namespace App\Policies;
 
-use App\Entities\ProductEntity;
-use App\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Repositories\ProductRepositoryInterface;
 
 class ProductPolicy
 {
-    use HandlesAuthorization;
+    protected ProductRepositoryInterface $productRepository;
 
-    public function allowUpdate(User $user, ProductEntity $product)
+    public function __construct(ProductRepositoryInterface $productRepository)
     {
-        if($user->seller->id === $product->sellerId) return true;
+        $this->productRepository = $productRepository;
+    }
+
+    public function allowManage(int $userId, int $productId)
+    {
+        $product = $this->productRepository->findById($productId);
+
+        if($product->isSeller($userId)) return true;
 
         return false;
     }

@@ -19,7 +19,7 @@
                                             <b>Total sum:</b> {{ $order->totalSum }}<br>
                                             <ul>
                                                 @foreach($order->products as $product)
-                                                    <li><b>{{ $product['profile']['title'] }}</b> |
+                                                    <li><b>{{ $product['title'] }}</b> |
                                                         <b>Price:</b> {{ $product['price'] }}</li>
                                                 @endforeach
                                             </ul>

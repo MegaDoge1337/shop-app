@@ -16,7 +16,7 @@ class OrderEloquentRepository implements OrderRepositoryInterface
             $order->findSeller(),
             $order->findCustomer(),
             $order->customer_address,
-            $order->products,
+            collect($order->products),
             $order->total_sum,
             $order->status,
             $order->created_at
@@ -36,7 +36,7 @@ class OrderEloquentRepository implements OrderRepositoryInterface
                 $orderModel->findSeller(),
                 $orderModel->findCustomer(),
                 $orderModel->customer_address,
-                $orderModel->products,
+                collect($orderModel->products),
                 $orderModel->total_sum,
                 $orderModel->status,
                 $orderModel->created_at
@@ -59,7 +59,7 @@ class OrderEloquentRepository implements OrderRepositoryInterface
                 $orderModel->findSeller(),
                 $orderModel->findCustomer(),
                 $orderModel->customer_address,
-                $orderModel->products,
+                collect($orderModel->products),
                 $orderModel->total_sum,
                 $orderModel->status,
                 $orderModel->created_at

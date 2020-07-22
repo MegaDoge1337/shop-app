@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Shop;
 
+use App\Entities\BasketEntity;
 use App\Entities\OrderEntity;
 use App\Http\Controllers\Controller;
 use App\Policies\OrderPolicy;
-use App\Repositories\BasketProductRepositoryInterface;
 use App\Repositories\BasketRepositoryInterface;
 use App\Repositories\CustomerRepositoryInterface;
 use App\Repositories\OrderRepositoryInterface;
@@ -20,7 +20,6 @@ class OrderController extends Controller
     protected TotalSumCalculator $totalSumCalculator;
     protected SellerRepositoryInterface $sellerRepository;
     protected CustomerRepositoryInterface $customerRepository;
-    protected BasketProductRepositoryInterface $basketProductRepository;
     protected BasketRepositoryInterface $basketRepository;
     protected ProductRepositoryInterface $productRepository;
     protected OrderRepositoryInterface $orderRepository;
@@ -29,7 +28,6 @@ class OrderController extends Controller
     public function __construct(TotalSumCalculator $sumCalculator,
                                 SellerRepositoryInterface $sellerRepository,
                                 CustomerRepositoryInterface $customerRepository,
-                                BasketProductRepositoryInterface $basketProductRepository,
                                 BasketRepositoryInterface $basketRepository,
                                 ProductRepositoryInterface $productRepository,
                                 OrderRepositoryInterface $orderRepository,
@@ -41,7 +39,6 @@ class OrderController extends Controller
         $this->sellerRepository = $sellerRepository;
         $this->customerRepository = $customerRepository;
         $this->basketRepository = $basketRepository;
-        $this->basketProductRepository = $basketProductRepository;
         $this->productRepository = $productRepository;
         $this->orderRepository = $orderRepository;
         $this->orderPolicy = $orderPolicy;
@@ -59,13 +56,9 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-        $basket = $this->basketRepository->findById($request->basket_id);
+        $basket = $this->basketRepository->findBasketById($request->basket_id);
 
-        $basketProducts = $this->basketProductRepository->findProductsByBasket($basket);
-
-        $products = $this->productRepository->findByBasketProducts($basketProducts);
-
-        $basket->changeProductsList($products);
+        $basket = $this->basketRepository->syncBaskets(collect([$basket]))->first();
 
         $order = OrderEntity::create($basket->seller,
             $basket->customer,
@@ -74,13 +67,13 @@ class OrderController extends Controller
             $basket->pricesTotalSum($this->totalSumCalculator),
             1);
 
-        $basket = $this->basketRepository->findById($basket->id);
+        $basket = $this->basketRepository->findBasketById($basket->id);
 
         $this->orderRepository->add($order);
 
-        $this->basketProductRepository->delete($basket);
+        $this->basketRepository->deleteBasketProduct($basket);
 
-        $this->basketRepository->delete($basket);
+        $this->basketRepository->deleteBasket($basket);
 
         return \Redirect::route('customer.orders');
     }
@@ -89,7 +82,7 @@ class OrderController extends Controller
     {
         $order = $this->orderRepository->findById($request->order_id);
 
-        if(!$this->orderPolicy->allowUpdate(\Auth::user(), $order))  return Redirect::route('error.403');
+        if (!$this->orderPolicy->allowUpdate(\Auth::user(), $order)) return Redirect::route('error.403');
 
         $order->changeStatus($request->status);
 

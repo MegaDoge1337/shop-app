@@ -2,13 +2,16 @@
 
 namespace App\Entities;
 
+
+use Illuminate\Support\Collection;
+
 class OrderEntity
 {
     public ?int $id;
     public SellerEntity $seller;
     public CustomerEntity $customer;
     public string $customerAddress;
-    public array $products;
+    public Collection $products;
     public float $totalSum;
     public int $status;
     public ?string $createdAt;
@@ -17,7 +20,7 @@ class OrderEntity
                                 SellerEntity $seller,
                                 CustomerEntity $customer,
                                 string $customerAddress,
-                                array $products,
+                                Collection $products,
                                 float $totalSum,
                                 int $status,
                                 ?string $createdAt)
@@ -40,7 +43,7 @@ class OrderEntity
     public static function create(SellerEntity $seller,
                                   CustomerEntity $customer,
                                   string $customerAddress,
-                                  array $products,
+                                  Collection $products,
                                   float $totalSum,
                                   int $status)
     {

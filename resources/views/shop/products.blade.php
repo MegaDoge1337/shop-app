@@ -34,11 +34,11 @@
                                                 <input type="hidden" name="seller_id"
                                                        value="{{ $product->sellerId }}">
                                                 <button class="btn btn-primary" type="submit">
-                                                        @if(\App\Entities\BasketProductEntity::actualize($userBasketProducts, $product->id))
-                                                            In Basket
-                                                        @else
-                                                            Add to Basket
-                                                        @endif
+                                                    @if(\App\Entities\Values\BasketProduct::hasProduct($userBasketProducts, $product->id))
+                                                        In Basket
+                                                    @else
+                                                        Add to Basket
+                                                    @endif
                                                 </button>
                                             </form>
                                         </td>

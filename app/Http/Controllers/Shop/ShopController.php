@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\BasketProductRepositoryInterface;
 use App\Repositories\BasketRepositoryInterface;
 use App\Repositories\CustomerRepositoryInterface;
 use App\Repositories\ProductRepositoryInterface;
@@ -14,7 +13,6 @@ class ShopController extends Controller
 {
 
     protected ProductRepositoryInterface $productRepository;
-    protected BasketProductRepositoryInterface $basketProductRepository;
     protected CustomerRepositoryInterface $customerRepository;
     protected SellerRepositoryInterface $sellerRepository;
     protected BasketRepositoryInterface $basketRepository;
@@ -22,7 +20,6 @@ class ShopController extends Controller
     public function __construct(CustomerRepositoryInterface $customerRepository,
                                 SellerRepositoryInterface $sellerRepository,
                                 ProductRepositoryInterface $productRepository,
-                                BasketProductRepositoryInterface $basketProductRepository,
                                 BasketRepositoryInterface $basketRepository)
     {
         $this->middleware('auth');
@@ -30,7 +27,6 @@ class ShopController extends Controller
         $this->customerRepository = $customerRepository;
         $this->sellerRepository = $sellerRepository;
         $this->productRepository = $productRepository;
-        $this->basketProductRepository = $basketProductRepository;
         $this->basketRepository = $basketRepository;
     }
 
@@ -54,7 +50,7 @@ class ShopController extends Controller
 
         $userBasket = $this->basketRepository->findCustomerBaskets($customer);
 
-        $userBasketProducts = $this->basketProductRepository->findProductsByBaskets($userBasket);
+        $userBasketProducts = $this->basketRepository->findProductsByBaskets($userBasket);
 
         return view('shop.products', [
             'seller' => $seller,
@@ -74,12 +70,12 @@ class ShopController extends Controller
 
         $userBasket = $this->basketRepository->findCustomerBaskets($customer);
 
-        $userBasketProduct = $this->basketProductRepository->findProductInBaskets($userBasket, $product_id);
+        $userBasketProduct = $this->basketRepository->findProductInBaskets($userBasket, $product_id);
 
         return view('shop.single_product', [
             'seller' => $seller,
             'product' => $product,
-            'userBasketProducts' => [$userBasketProduct]
+            'userBasketProducts' => collect([$userBasketProduct])
         ]);
     }
 }

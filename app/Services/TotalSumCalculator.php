@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+
 class TotalSumCalculator {
 
-    public function productPricesSum(array $products)
+    public function productPricesSum(Collection $products)
     {
         $sum = 0.0;
 

@@ -28,7 +28,7 @@ Route::post('/order/update', 'Shop\OrderController@changeStatus')->name('order.u
 Route::post('/order', 'Shop\OrderController@store')->name('order.store');
 
 Route::get('/seller/orders', 'Me\SellerController@ordersForSeller')->name('seller.orders');
-Route::resource('seller', 'Me\SellerController');
+Route::resource('seller', 'Me\ProductsController');
 
 Route::get('/shop', 'Shop\ShopController@index')->name('shop.index');
 Route::get('/shop/{shop}', 'Shop\ShopController@show')->name('shop.show');

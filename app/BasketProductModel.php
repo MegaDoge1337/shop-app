@@ -37,8 +37,18 @@ class BasketProductModel extends Model
         'product_id'
     ];
 
-    public function products()
+    public function product()
     {
         return $this->belongsTo(ProductModel::class);
+    }
+
+    public function productPrice()
+    {
+        return $this->product->price ?? 0.0;
+    }
+
+    public function productTitle()
+    {
+        return $this->product->title ?? '';
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Entities\ProductEntity;
-use App\Entities\Profiles\ProductProfile;
+use App\Entities\Values\ProductProfile;
 use App\ProductModel;
 
 class ProductEloquentRepository implements ProductRepositoryInterface

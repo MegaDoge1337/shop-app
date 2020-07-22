@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Me;
 
 use App\Entities\ProductEntity;
-use App\Entities\Profiles\ProductProfile;
+use App\Entities\Values\ProductProfile;
 use App\Http\Controllers\Controller;
 use App\Policies\ProductPolicy;
 use App\Repositories\ProductEloquentRepository;
@@ -70,9 +70,11 @@ class ProductsController extends Controller
 
     public function edit($id)
     {
-        $product = $this->productRepository->findById($id);
+        if (!$this->productPolicy->allowManage(\Auth::id(), $id)) {
+            return Redirect::route('error.403');
+        }
 
-        if (!$this->productPolicy->allowUpdate(\Auth::user(), $product)) return Redirect::route('error.403');
+        $product = $this->productRepository->findById($id);
 
         return view('seller.edit', ['product' => $product]);
     }
@@ -86,11 +88,15 @@ class ProductsController extends Controller
             'image_url' => 'required',
         ]);
 
+        if (!$this->productPolicy->allowManage(\Auth::id(), $id)) {
+            return Redirect::route('error.403');
+        }
+
         $product = $this->productRepository->findById($id);
 
-        if (!$this->productPolicy->allowUpdate(\Auth::user(), $product)) return Redirect::route('error.403');
+        $profile = ProductProfile::create($request->title, $request->description, $request->image_url);
 
-        $product->profile->changeProfile($request->title, $request->description, $request->image_url);
+        $product->changeProfile($profile);
 
         $product->changePrice($request->price);
 
@@ -102,16 +108,15 @@ class ProductsController extends Controller
 
     public function destroy($id)
     {
+        if (!$this->productPolicy->allowManage(\Auth::id(), $id)) {
+            return Redirect::route('error.403');
+        }
+
         $product = $this->productRepository->findById($id);
 
-        if (!$this->productPolicy->allowUpdate(\Auth::user(), $product)) return Redirect::route('error.403');
+        $this->productRepository->delete($product);
 
-        if ($product->canBeDeleted('some policy')) {
-            $this->productRepository->delete($product);
-
-            return Redirect::to('seller')
-                ->with('success', 'Product deleted successfully!');
-        }
-        return Redirect::to('seller');
+        return Redirect::to('seller')
+            ->with('success', 'Product deleted successfully!');
     }
 }

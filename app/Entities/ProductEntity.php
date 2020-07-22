@@ -2,7 +2,7 @@
 
 namespace App\Entities;
 
-use App\Entities\Profiles\ProductProfile;
+use App\Entities\Values\ProductProfile;
 
 class ProductEntity
 {
@@ -37,10 +37,14 @@ class ProductEntity
         $this->profile = $profile;
     }
 
-    public function canBeDeleted($policy)
+    public function isSeller(int $userId)
     {
-        if($policy) return $this;
-        return null;
+        if($userId === $this->sellerId)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public function toArray()
