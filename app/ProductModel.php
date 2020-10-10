@@ -1,0 +1,57 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * App\ProductModel
+ *
+ * @property int $id
+ * @property int $seller_id
+ * @property string $title
+ * @property float $price
+ * @property int|null $existence
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereExistence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereSellerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereUpdatedAt($value)
+ * @mixin \Eloquent
+ * @property-read \App\ProductModel|null $basket
+ * @property-read \App\SellerModel $seller
+ * @property string $description
+ * @property string $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\ProductModel whereImageUrl($value)
+ */
+class ProductModel extends Model
+{
+    protected $table = 'products';
+
+    protected $fillable = [
+        'seller_id',
+        'title',
+        'price',
+        'description',
+        'image_url',
+        'existence'
+    ];
+
+    public function seller()
+    {
+        return $this->belongsTo(SellerModel::class);
+    }
+
+    public function basketProducts()
+    {
+        return $this->hasMany(BasketProductModel::class, 'product_id');
+    }
+}

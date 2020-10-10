@@ -13,6 +13,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function () { return view('welcome'); });
+
+Auth::routes();
+
+Route::get('/home', 'Me\HomeController@index')->name('home');
+
+Route::get('/customer/orders', 'Me\CustomerController@ordersForCustomer')->name('customer.orders');
+Route::get('/customer/edit/contacts', 'Me\CustomerController@index')->name('customer.contacts');
+Route::patch('/customer/contacts/{contacts}', 'Me\CustomerController@update')->name('customer.update');
+
+Route::post('/order/make', 'Shop\OrderController@make')->name('order.make');
+Route::post('/order/update', 'Shop\OrderController@changeStatus')->name('order.update');
+Route::post('/order', 'Shop\OrderController@store')->name('order.store');
+
+Route::get('/seller/orders', 'Me\SellerController@ordersForSeller')->name('seller.orders');
+Route::resource('seller', 'Me\ProductsController');
+
+Route::get('/shop', 'Shop\ShopController@index')->name('shop.index');
+Route::get('/shop/{shop}', 'Shop\ShopController@show')->name('shop.show');
+Route::get('/shop/{shop}/product/{product}', 'Shop\ShopController@singleProduct')->name('shop.single');
+
+Route::get('/basket', 'Shop\BasketController@index')->name('basket.index');
+Route::post('/basket', 'Shop\BasketController@store')->name('basket.store');
+
+Route::get('/errors/403', function () { return view('errors.403'); })->name('error.403');
